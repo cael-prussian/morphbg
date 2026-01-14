@@ -22,6 +22,8 @@
 
 ### Method 1: Complete Bundle (Recommended)
 
+**[→ See this demo live](https://cael-prussian.github.io/morphbg/examples/demo-complete-bundle.html)**
+
 The simplest way - just 2 script tags:
 
 ```html
@@ -57,6 +59,8 @@ The simplest way - just 2 script tags:
 
 ### Method 2: Single Shader (Smallest Size)
 
+**[→ See this demo live](https://cael-prussian.github.io/morphbg/examples/demo-modular-single.html)**
+
 For sites that only need one shader (~13KB gzipped):
 
 ```html
@@ -77,6 +81,8 @@ For sites that only need one shader (~13KB gzipped):
 ---
 
 ### Method 3: Modular Multi-Shader
+
+**[→ See this demo live](https://cael-prussian.github.io/morphbg/examples/demo-modular-multi.html)**
 
 Load only specific shaders you need:
 
