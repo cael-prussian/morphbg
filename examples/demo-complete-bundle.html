@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Complete Bundle Approach</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .content {
+            max-width: 800px;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        p {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Canvas for background shader -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Content sections with shader switching -->
+    <section data-shader-system="gs1" data-bg-preset="HERO">
+        <div class="content">
+            <h1>Complete Bundle Demo</h1>
+            <p>This demo uses <strong>morphbg-all.complete.js</strong> – everything in one file!</p>
+            <p>Just 2 script tags: Three.js + Complete Bundle</p>
+            <div class="badge">Shader: GS1 (Topographic Flow) • Preset: HERO</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs2" data-bg-preset="AMBIENT">
+        <div class="content">
+            <h2>Automatic Shader Switching</h2>
+            <p>As you scroll, the background shader changes automatically based on the <code>data-shader-system</code>
+                attribute.</p>
+            <p>The ScrollShaderManager handles all transitions smoothly with fade effects.</p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: AMBIENT</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs2" data-bg-preset="ENERGETIC">
+        <div class="content">
+            <h2>Same Shader, Different Preset</h2>
+            <p>Even within the same shader system, you can change visual styles using different presets.</p>
+            <p>Notice how the animation changes without switching shaders.</p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: ENERGETIC</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs3" data-bg-preset="HERO">
+        <div class="content">
+            <h2>Dot Pattern Shader</h2>
+            <p>This section uses the GS3 shader system with a dot-based pattern.</p>
+            <p>All three shader systems are bundled together in one file!</p>
+            <div class="badge">Shader: GS3 (Dot Field) • Preset: HERO</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs3" data-bg-preset="CALM">
+        <div class="content">
+            <h2>Calm Preset</h2>
+            <p>Perfect for reading or focusing on content.</p>
+            <p>The CALM preset reduces motion and cursor effects.</p>
+            <div class="badge">Shader: GS3 (Dot Field) • Preset: CALM</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs1" data-bg-preset="AMBIENT">
+        <div class="content">
+            <h2>Back to Topographic</h2>
+            <p>Seamless transitions between any shader combination.</p>
+            <p>Zero configuration required – it just works!</p>
+            <div class="badge">Shader: GS1 (Topographic Flow) • Preset: AMBIENT</div>
+        </div>
+    </section>
+
+    <!-- Only 2 scripts needed! -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+    <script src="../dist/morphbg-all.complete.js"></script>
+</body>
+
+</html>

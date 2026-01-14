@@ -4,6 +4,7 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
     const FRAG = opts.fragmentShader;
     const canvasId = opts.canvasId || 'bg-canvas';
     const ADAPTER = opts.adapter || null;
+    const DEBUG = opts.debug || false; // Enable debug mode
 
     if (!THREE || !CFG || !FRAG) {
         console.warn('Missing THREE, config, or fragment shader', opts);
@@ -103,6 +104,36 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
     let scrolling = false;
     let scrollTimer = null;
 
+    // Debug FPS tracking
+    let fpsCounter = null;
+    let fpsFrames = [];
+    let fpsLastTime = performance.now();
+
+    if (DEBUG) {
+        // Create FPS counter element
+        fpsCounter = document.createElement('div');
+        fpsCounter.id = 'morphbg-fps-counter';
+        fpsCounter.style.cssText = `
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 4px;
+            z-index: 9999;
+            pointer-events: none;
+        `;
+        fpsCounter.textContent = 'FPS: --';
+        document.body.appendChild(fpsCounter);
+
+        console.log('[morphbg] Debug mode enabled');
+        console.log('[morphbg] Config:', CFG);
+        console.log('[morphbg] Adapter:', ADAPTER ? ADAPTER.constructor.name || 'Anonymous' : 'None');
+    }
+
     window.addEventListener('scroll', () => {
         scrolling = true;
         clearTimeout(scrollTimer);
@@ -135,6 +166,18 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
 
         if (readK > 0.60) return 20;  // READ calm
         return 30;                    // AMBIENT default
+    }
+
+    function updateFpsCounter(actualFps, targetFps) {
+        if (!DEBUG || !fpsCounter) return;
+
+        // Color based on performance
+        let color = '#0f0'; // green
+        if (actualFps < targetFps * 0.8) color = '#ff0'; // yellow
+        if (actualFps < targetFps * 0.5) color = '#f00'; // red
+
+        fpsCounter.style.color = color;
+        fpsCounter.textContent = `FPS: ${actualFps.toFixed(1)} / ${targetFps} (DPR: ${dpr.toFixed(2)})`;
     }
 
     let dpr = 1;
@@ -208,6 +251,10 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         const vc = vh * 0.5;
         const transitionPx = Math.max(1, vh * transitionVh);
 
+        if (DEBUG) {
+            console.log('[morphbg] Computing scroll targets - viewport center:', vc);
+        }
+
         let totalW = 0;
         let modeSum = 0;
 
@@ -255,6 +302,10 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
 
             const w = sectionWeight(rect, curve.exponent);
             if (w <= 0.00001) continue;
+
+            if (DEBUG && w > 0.01) {
+                console.log(`[morphbg] Section weight: ${w.toFixed(3)} - preset: ${presetName}, mode: ${modeName}`);
+            }
 
             if (w > strongestW) {
                 strongestW = w;
@@ -309,6 +360,19 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
             cursor: acc.cursor / totalW,
             calm: acc.calm / totalW,
         };
+
+        if (DEBUG) {
+            console.log('[morphbg] Final targets:', {
+                mode: targetMode.toFixed(2),
+                spatial: nextTarget.spatial.toFixed(2),
+                temporal: nextTarget.temporal.toFixed(2),
+                cursor: nextTarget.cursor.toFixed(2),
+                calm: nextTarget.calm.toFixed(2),
+                totalWeight: totalW.toFixed(2),
+                strongestPreset: lastPreset,
+                strongestMode: lastMode
+            });
+        }
 
         const res = ADAPTER.finalizeTargets({
             target: { ...nextTarget, ...(targetExtraInit || {}) },
@@ -388,6 +452,22 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         // else: keep previous u_time
 
         renderer.render(scene, camera);
+
+        // Update FPS counter
+        if (DEBUG) {
+            const fpsNow = performance.now();
+            const fpsDelta = fpsNow - fpsLastTime;
+            fpsLastTime = fpsNow;
+
+            if (fpsDelta > 0) {
+                const currentFps = 1000 / fpsDelta;
+                fpsFrames.push(currentFps);
+                if (fpsFrames.length > 60) fpsFrames.shift();
+
+                const avgFps = fpsFrames.reduce((a, b) => a + b, 0) / fpsFrames.length;
+                updateFpsCounter(avgFps, fps);
+            }
+        }
     }
 
     animate();
@@ -399,11 +479,15 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         camera,
         material,
         computeScrollTargets,
+        debug: DEBUG,
         stop: () => {
             isRunning = false;
             if (animationId !== null) {
                 cancelAnimationFrame(animationId);
                 animationId = null;
+            }
+            if (DEBUG && fpsCounter && fpsCounter.parentNode) {
+                fpsCounter.parentNode.removeChild(fpsCounter);
             }
         }
     };

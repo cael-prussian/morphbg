@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Modular Multi-Shader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .content {
+            max-width: 800px;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        p {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .file-size {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Canvas for background shader -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Content sections with shader switching -->
+    <section data-shader-system="gs1" data-bg-preset="HERO">
+        <div class="content">
+            <h1>Modular Multi-Shader</h1>
+            <p>Load only the shaders you need with automatic switching!</p>
+            <p>This demo loads <strong>GS1 + GS3</strong> for specific combinations.</p>
+            <div class="badge">Shader: GS1 (Topographic Flow) • Preset: HERO</div>
+            <div class="file-size">
+                <strong>4 Scripts:</strong><br>
+                Three.js + gs-engine.js + morphbg-gs1.bundle.js + morphbg-gs3.bundle.js<br>
+                Total: ~17KB (vs 25KB for complete bundle)
+            </div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs1" data-bg-preset="AMBIENT">
+        <div class="content">
+            <h2>Smart Auto-Init</h2>
+            <p>When multiple shader bundles are loaded, they detect each other and defer initialization to the
+                ScrollShaderManager.</p>
+            <p>No manual configuration needed – it just works!</p>
+            <div class="badge">Shader: GS1 (Topographic Flow) • Preset: AMBIENT</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs3" data-bg-preset="HERO">
+        <div class="content">
+            <h2>Seamless Transitions</h2>
+            <p>Shaders switch automatically based on scroll position with smooth fade effects.</p>
+            <p>The manager handles all cleanup and initialization.</p>
+            <div class="badge">Shader: GS3 (Dot Field) • Preset: HERO</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs3" data-bg-preset="AMBIENT">
+        <div class="content">
+            <h2>Preset Control Per Section</h2>
+            <p>Each section can specify its own shader and preset combination.</p>
+            <p>Use <code>data-shader-system="gs1|gs3"</code> and <code>data-bg-preset="HERO|AMBIENT|CALM"</code></p>
+            <div class="badge">Shader: GS3 (Dot Field) • Preset: AMBIENT</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs1" data-bg-preset="CALM">
+        <div class="content">
+            <h2>Load What You Need</h2>
+            <p>This demo skips GS2 entirely, saving ~7KB of bandwidth.</p>
+            <p>Perfect for when you want specific shader combinations!</p>
+            <div class="badge">Shader: GS1 (Topographic Flow) • Preset: CALM</div>
+        </div>
+    </section>
+
+    <section data-shader-system="gs3" data-bg-preset="CALM">
+        <div class="content">
+            <h2>Best For</h2>
+            <p>✓ Multi-section landing pages<br>
+                ✓ Specific shader combinations<br>
+                ✓ File size optimization<br>
+                ✓ Progressive enhancement</p>
+            <div class="badge">Shader: GS3 (Dot Field) • Preset: CALM</div>
+        </div>
+    </section>
+
+    <!-- Load unbundled source files (works with file:// protocol) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+    <script src="../src/engine.js"></script>
+    <script src="../src/scroll-manager.js"></script>
+    <!-- Load GS1 shader -->
+    <script src="../src/shaders/gs1/config.js"></script>
+    <script src="../src/shaders/gs1/shader.js"></script>
+    <script src="../src/shaders/gs1/adaptor.js"></script>
+    <!-- Load GS3 shader -->
+    <script src="../src/shaders/gs3/config.js"></script>
+    <script src="../src/shaders/gs3/shader.js"></script>
+    <script src="../src/shaders/gs3/adaptor.js"></script>
+    <!-- Note: We're NOT loading GS2 - only the shaders we need! -->
+
+    <script>
+        // Initialize the ScrollShaderManager after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                ScrollShaderManager.init();
+            });
+        } else {
+            ScrollShaderManager.init();
+        }
+    </script>
+</body>
+
+</html>

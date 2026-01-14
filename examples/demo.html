@@ -4,7 +4,7 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>GS3 Isolated Test - Dot Field</title>
+    <title>Multi-Shader Background Demo</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
     <style>
@@ -157,6 +157,217 @@
     <div id="shader-indicator">Loading...</div>
 
     <!-- ========================================= -->
+    <!-- GS1: TOPOGRAPHIC FLOW SHADER (9 sections) -->
+    <!-- ========================================= -->
+
+    <!-- Atmospheric Mesh Mode -->
+    <div class="section" data-shader-system="gs1" data-shader-preset="hero" data-shader-mode="atmospheric-mesh"
+        data-flatten="0.0" data-height-contrast="1.0" data-warp-intensity="1.0">
+        <div class="section-content">
+            <h1>Atmospheric Mesh · Hero</h1>
+            <p class="section-desc">Maximum spatial motion • Organic flowing topography • High energy</p>
+            <span class="shader-badge">GS1 • Atmospheric Mesh • Hero</span>
+        </div>
+        <div class="scroll-hint">↓ Scroll to explore all presets ↓</div>
+    </div>
+
+    <div class="section" data-shader-system="gs1" data-shader-preset="ambient" data-shader-mode="atmospheric-mesh"
+        data-flatten="0.35" data-height-contrast="0.6" data-warp-intensity="0.7">
+        <div class="section-content">
+            <h1>Atmospheric Mesh · Ambient</h1>
+            <p class="section-desc">Moderate spatial motion • Balanced terrain flow • Medium energy</p>
+            <span class="shader-badge">GS1 • Atmospheric Mesh • Ambient</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs1" data-shader-preset="read" data-shader-mode="atmospheric-mesh"
+        data-flatten="0.85" data-height-contrast="0.25" data-warp-intensity="0.3">
+        <div class="section-content">
+            <h1>Atmospheric Mesh · Read</h1>
+            <p class="section-desc">Minimal spatial motion • Calm atmospheric presence • Low energy</p>
+            <span class="shader-badge">GS1 • Atmospheric Mesh • Read</span>
+        </div>
+    </div>
+
+    <!-- Topographic Flow Mode -->
+    <div class="section" data-shader-system="gs1" data-shader-preset="hero" data-shader-mode="topographic-flow"
+        data-flatten="0.0" data-height-contrast="1.0" data-warp-intensity="1.0" data-topo-bands="30"
+        data-topo-white-bias="0.0">
+        <div class="section-content">
+            <h1>Topographic Flow · Hero</h1>
+            <p class="section-desc">Dynamic terrain mapping • High contrast contours • Intense movement</p>
+            <span class="shader-badge">GS1 • Topographic Flow • Hero</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs1" data-shader-preset="ambient" data-shader-mode="topographic-flow"
+        data-flatten="0.35" data-height-contrast="0.6" data-warp-intensity="0.7" data-topo-bands="15"
+        data-topo-white-bias="0.05">
+        <div class="section-content">
+            <h1>Topographic Flow · Ambient</h1>
+            <p class="section-desc">Balanced topographic patterns • Moderate height variation • Steady flow</p>
+            <span class="shader-badge">GS1 • Topographic Flow • Ambient</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs1" data-shader-preset="read" data-shader-mode="topographic-flow"
+        data-flatten="0.85" data-height-contrast="0.25" data-warp-intensity="0.3" data-topo-bands="8"
+        data-topo-white-bias="0.15">
+        <div class="section-content">
+            <h1>Topographic Flow · Read</h1>
+            <p class="section-desc">Subtle terrain hints • Gentle contour lines • Reading-friendly</p>
+            <span class="shader-badge">GS1 • Topographic Flow • Read</span>
+        </div>
+    </div>
+
+    <!-- Fabric Warp Mode -->
+    <div class="section" data-shader-system="gs1" data-shader-preset="hero" data-shader-mode="fabric-warp"
+        data-flatten="0.0" data-height-contrast="1.0" data-warp-intensity="1.0" data-organic-backlight="1.0"
+        data-organic-darkening="1.0">
+        <div class="section-content">
+            <h1>Fabric Warp · Hero</h1>
+            <p class="section-desc">Textile-inspired deformation • Bold fabric texture • Dynamic warp</p>
+            <span class="shader-badge">GS1 • Fabric Warp • Hero</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs1" data-shader-preset="ambient" data-shader-mode="fabric-warp"
+        data-flatten="0.35" data-height-contrast="0.6" data-warp-intensity="0.7" data-organic-backlight="0.7"
+        data-organic-darkening="0.7">
+        <div class="section-content">
+            <h1>Fabric Warp · Ambient</h1>
+            <p class="section-desc">Moderate textile flow • Soft material feel • Organic texture</p>
+            <span class="shader-badge">GS1 • Fabric Warp • Ambient</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs1" data-shader-preset="read" data-shader-mode="fabric-warp"
+        data-flatten="0.85" data-height-contrast="0.25" data-warp-intensity="0.3" data-organic-backlight="0.3"
+        data-organic-darkening="0.3">
+        <div class="section-content">
+            <h1>Fabric Warp · Read</h1>
+            <p class="section-desc">Minimal fabric texture • Flattened surface • Ultra-calm backdrop</p>
+            <span class="shader-badge">GS1 • Fabric Warp • Read</span>
+        </div>
+    </div>
+
+    <!-- Transition buffer -->
+    <div class="buffer-section">
+        <div class="buffer-content">— Transitioning to GS2 Glitch Technical —</div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- GS2: GLITCH TECHNICAL SHADER (9 sections) -->
+    <!-- ========================================= -->
+
+    <!-- Glitch Grid Mode -->
+    <div class="section" data-shader-system="gs2" data-shader-preset="hero" data-shader-mode="glitch-grid"
+        data-flow-dir="0deg" data-calm="0.05" data-grid-line-width="1.5" data-grid-fill-amount="0.8"
+        data-grid-cursor-fills="1.8" data-grid-subdivision-depth="1.4" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Glitch Grid · Hero</h1>
+            <p class="section-desc">Maximum disruption • Geometric fragmentation • Digital chaos</p>
+            <span class="shader-badge">GS2 • Glitch Grid • Hero</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs2" data-shader-preset="ambient" data-shader-mode="glitch-grid"
+        data-flow-dir="45deg" data-calm="0.45" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Glitch Grid · Ambient</h1>
+            <p class="section-desc">Moderate glitch artifacts • Balanced grid distortion • Technical aesthetic</p>
+            <span class="shader-badge">GS2 • Glitch Grid • Ambient</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs2" data-shader-preset="read" data-shader-mode="glitch-grid"
+        data-flow-dir="90deg" data-calm="0.85" data-grid-line-width="0.7" data-grid-fill-amount="0.3"
+        data-grid-cursor-fills="0.4" data-grid-subdivision-depth="0.5" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Glitch Grid · Read</h1>
+            <p class="section-desc">Subtle grid artifacts • Minimal disruption • Readable background</p>
+            <span class="shader-badge">GS2 • Glitch Grid • Read</span>
+        </div>
+    </div>
+
+    <!-- Vector Glitch Mode -->
+    <div class="section" data-shader-system="gs2" data-shader-preset="hero" data-shader-mode="vector-glitch"
+        data-flow-dir="45deg" data-calm="0.05" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="1.5" data-shard-speed="1.5"
+        data-shard-chaos="1.5" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Vector Glitch · Hero</h1>
+            <p class="section-desc">Directional data corruption • Sharp vector artifacts • High intensity</p>
+            <span class="shader-badge">GS2 • Vector Glitch • Hero</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs2" data-shader-preset="ambient" data-shader-mode="vector-glitch"
+        data-flow-dir="45deg" data-calm="0.45" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Vector Glitch · Ambient</h1>
+            <p class="section-desc">Balanced vector flow • Controlled distortion • Technical elegance</p>
+            <span class="shader-badge">GS2 • Vector Glitch • Ambient</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs2" data-shader-preset="read" data-shader-mode="vector-glitch"
+        data-flow-dir="90deg" data-calm="0.85" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="0.6" data-shard-speed="0.5"
+        data-shard-chaos="0.5" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Vector Glitch · Read</h1>
+            <p class="section-desc">Gentle vector hints • Subtle directional flow • Calm technical presence</p>
+            <span class="shader-badge">GS2 • Vector Glitch • Read</span>
+        </div>
+    </div>
+
+    <!-- Signal Flow Mode -->
+    <div class="section" data-shader-system="gs2" data-shader-preset="hero" data-shader-mode="signal-flow"
+        data-flow-dir="0deg" data-calm="0.05" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="1.3" data-flow-warp="1.5">
+        <div class="section-content">
+            <h1>Signal Flow · Hero</h1>
+            <p class="section-desc">Data stream visualization • High bandwidth • Information overload</p>
+            <span class="shader-badge">GS2 • Signal Flow • Hero</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs2" data-shader-preset="ambient" data-shader-mode="signal-flow"
+        data-flow-dir="90deg" data-calm="0.45" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="1.0" data-flow-warp="1.0">
+        <div class="section-content">
+            <h1>Signal Flow · Ambient</h1>
+            <p class="section-desc">Moderate data transmission • Steady signal • Technical balance</p>
+            <span class="shader-badge">GS2 • Signal Flow • Ambient</span>
+        </div>
+    </div>
+
+    <div class="section" data-shader-system="gs2" data-shader-preset="read" data-shader-mode="signal-flow"
+        data-flow-dir="90deg" data-calm="0.85" data-grid-line-width="1.0" data-grid-fill-amount="0.5"
+        data-grid-cursor-fills="1.0" data-grid-subdivision-depth="1.0" data-shard-count="1.0" data-shard-speed="1.0"
+        data-shard-chaos="1.0" data-flow-density="0.7" data-flow-warp="0.6">
+        <div class="section-content">
+            <h1>Signal Flow · Read</h1>
+            <p class="section-desc">Minimal signal noise • Quiet data presence • Reading-optimized</p>
+            <span class="shader-badge">GS2 • Signal Flow • Read</span>
+        </div>
+    </div>
+
+    <!-- Transition buffer -->
+    <div class="buffer-section">
+        <div class="buffer-content">— Transitioning to GS3 Dot Field —</div>
+    </div>
+
+    <!-- ========================================= -->
     <!-- GS3: DOT FIELD SHADER (6 sections) -->
     <!-- ========================================= -->
 
@@ -194,7 +405,7 @@
     <!-- Kusama Infinite Mode -->
     <div class="section" data-shader-system="gs3" data-shader-preset="hero" data-shader-mode="kusama-infinite"
         data-k-grid="0.5" data-k-jitter="1.0" data-k-size="0.5" data-k-lane="0.8" data-k-wobble="0.92"
-        data-k-alpha="1.0">
+        data-k-alpha="1.0" data-debug-colors="0.0">
         <div class="section-content">
             <h1>Kusama Infinite · Hero</h1>
             <p class="section-desc">Dense polka dot installation • Artistic infinity • Bold presence</p>
@@ -204,7 +415,7 @@
 
     <div class="section" data-shader-system="gs3" data-shader-preset="ambient" data-shader-mode="kusama-infinite"
         data-k-grid="0.6" data-k-jitter="1.0" data-k-size="0.7" data-k-lane="0.9" data-k-wobble="0.92"
-        data-k-alpha="1.0">
+        data-k-alpha="1.0" data-debug-colors="0.0">
         <div class="section-content">
             <h1>Kusama Infinite · Ambient</h1>
             <p class="section-desc">Moderate dot field • Balanced artistic presence • Contemplative space</p>
@@ -214,7 +425,7 @@
 
     <div class="section" data-shader-system="gs3" data-shader-preset="read" data-shader-mode="kusama-infinite"
         data-k-grid="0.5" data-k-jitter="1.0" data-k-size="1.0" data-k-lane="1.0" data-k-wobble="0.92"
-        data-k-alpha="1.0">
+        data-k-alpha="1.0" data-debug-colors="0.0">
         <div class="section-content">
             <h1>Kusama Infinite · Read</h1>
             <p class="section-desc">Meditative dot composition • Serene infinity room • Perfect for focus</p>
@@ -222,7 +433,10 @@
         </div>
     </div>
 
-    <!-- GS3 Mode 2: Octopus Legs (TESTING) -->
+    <!-- GS3 Mode 2: Octopus Legs -->
+    <div class="buffer-section">
+        <div class="buffer-content">↓ GS3 Mode 2: Octopus Legs ↓</div>
+    </div>
 
     <div class="section" data-shader-system="gs3" data-shader-preset="hero" data-shader-mode="octopus-legs"
         data-k-grid="0.5" data-k-jitter="0.65" data-k-size="0.38" data-k-lane="0.55" data-k-wobble="0.75"
@@ -230,31 +444,34 @@
         <div class="section-content">
             <h1>🐙 Octopus Legs · Hero</h1>
             <p class="section-desc">Curvy organic lanes • Flowing tentacles • Dynamic overlapping paths</p>
-            <span class="shader-badge">GS3 • Octopus Legs • Hero [MODE 2 - TESTING]</span>
+            <span class="shader-badge">GS3 • Octopus Legs • Hero</span>
         </div>
     </div>
 
     <div class="section" data-shader-system="gs3" data-shader-preset="ambient" data-shader-mode="octopus-legs"
         data-k-grid="0.5" data-k-jitter="0.45" data-k-size="0.55" data-k-lane="0.5" data-k-wobble="0.55"
-        data-k-alpha="0.85" data-k-curve-amp="0.65" data-k-curve-variety="0.75">
+        data-k-alpha="0.85" data-k-curve-amp="0.65" data-k-curve-variety="0.75" data-debug-colors="0.0">
         <div class="section-content">
             <h1>🐙 Octopus Legs · Ambient</h1>
             <p class="section-desc">Gentle curves • Soft motion • Balanced flow</p>
-            <span class="shader-badge">GS3 • Octopus Legs • Ambient [MODE 2 - TESTING]</span>
+            <span class="shader-badge">GS3 • Octopus Legs • Ambient</span>
         </div>
     </div>
 
     <div class="section" data-shader-system="gs3" data-shader-preset="read" data-shader-mode="octopus-legs"
         data-k-grid="0.5" data-k-jitter="0.25" data-k-size="0.7" data-k-lane="0.9" data-k-wobble="0.35"
-        data-k-alpha="0.9" data-k-curve-amp="0.45" data-k-curve-variety="0.55">
+        data-k-alpha="0.9" data-k-curve-amp="0.45" data-k-curve-variety="0.55" data-debug-colors="0.0">
         <div class="section-content">
             <h1>🐙 Octopus Legs · Read</h1>
             <p class="section-desc">Subtle undulation • Minimal distraction • Calm background</p>
-            <span class="shader-badge">GS3 • Octopus Legs • Read [MODE 2 - TESTING]</span>
+            <span class="shader-badge">GS3 • Octopus Legs • Read</span>
         </div>
     </div>
 
     <!-- Final buffer -->
+    <div class="buffer-section">
+        <div class="buffer-content">— End of Demo —</div>
+    </div>
 
     <!-- Universal Config Form Panel (embedded for local testing) -->
     <style>
@@ -386,7 +603,6 @@
 
         #shader-config-panel .step-toggle,
         #shader-config-panel .direction-presets,
-        #shader-config-panel .preset-buttons,
         #shader-config-panel .density-presets {
             display: flex;
             gap: 6px;
@@ -792,7 +1008,7 @@
                 </div>
                 <input type="range" min="0" max="1" step="0.05" value="0.5" data-uniform="gridFillAmount"
                     data-attr="data-grid-fill-amount">
-                <div class="extra-info">Medium cell fill probability</div>
+                <div class="extra-info">(Unused - use Grid Fill Density instead)</div>
             </label>
 
             <label data-mode="glitch-grid">
@@ -802,7 +1018,7 @@
                 </div>
                 <input type="range" min="0" max="2" step="0.1" value="1.0" data-uniform="gridCursorFills"
                     data-attr="data-grid-cursor-fills">
-                <div class="extra-info">Fill density near cursor/ghosts (HERO)</div>
+                <div class="extra-info">(Unused - ghosts work via border reveals)</div>
             </label>
 
             <label data-mode="glitch-grid">
@@ -812,7 +1028,17 @@
                 </div>
                 <input type="range" min="0.3" max="1.5" step="0.1" value="1.0" data-uniform="gridSubdivisionDepth"
                     data-attr="data-grid-subdivision-depth">
-                <div class="extra-info">Cell size (lower=larger rectangles/less fills, higher=smaller/more)</div>
+                <div class="extra-info">Cell size (lower=larger rectangles, higher=smaller)</div>
+            </label>
+
+            <label data-mode="glitch-grid">
+                <div class="label-header">
+                    <span class="label-text">Grid Fill Density</span>
+                    <span class="value-display" data-display="gridSmallFills">1.0</span>
+                </div>
+                <input type="range" min="0" max="1" step="0.05" value="1.0" data-uniform="gridSmallFills"
+                    data-attr="data-grid-small-fills">
+                <div class="extra-info">Colored rectangle density: 0=none, 1=all filled</div>
             </label>
 
             <label data-mode="vector-glitch">
@@ -864,12 +1090,6 @@
                     data-attr="data-flow-warp">
                 <div class="extra-info">Curvature intensity</div>
             </label>
-
-            <div class="preset-buttons">
-                <button data-preset="hero" data-shader="gs2">Hero</button>
-                <button data-preset="ambient" data-shader="gs2">Ambient</button>
-                <button data-preset="read" data-shader="gs2">Read</button>
-            </div>
         </div>
 
         <!-- GS3 Controls (Kusama Dots) -->
@@ -971,7 +1191,7 @@
                     </div>
                     <input type="range" min="0" max="1" step="1" value="0" data-uniform="debugColors"
                         data-attr="data-debug-colors">
-                    <div class="extra-info">0=black dots, 1=colored by scale (red=large, blue=small)</div>
+                    <div class="extra-info">0=black dots, 1=colored by scale (brand colors)</div>
                 </label>
             </div>
         </div>
@@ -980,15 +1200,25 @@
     <!-- Toggle Button -->
     <button id="config-toggle-btn" title="Open Config Panel (Ctrl+K)">⚙️</button>
 
-    <script src="gs-engine.js"></script>
+    <script src="../src/engine.js"></script>
+
+    <!-- GS1: Topographic shader files -->
+    <script src="../src/shaders/gs1/config.js"></script>
+    <script src="../src/shaders/gs1/shader.js"></script>
+    <script src="../src/shaders/gs1/adaptor.js"></script>
+
+    <!-- GS2: Glitch shader files -->
+    <script src="../src/shaders/gs2/config.js"></script>
+    <script src="../src/shaders/gs2/shader.js"></script>
+    <script src="../src/shaders/gs2/adaptor.js"></script>
 
     <!-- GS3: Dot Field shader files -->
-    <script src="gs3/config.js"></script>
-    <script src="gs3/shader.js"></script>
-    <script src="gs3/adaptor.js"></script>
+    <script src="../src/shaders/gs3/config.js"></script>
+    <script src="../src/shaders/gs3/shader.js"></script>
+    <script src="../src/shaders/gs3/adaptor.js"></script>
 
     <!-- Scroll-based shader manager -->
-    <script src="scroll-shader-manager-simple.js"></script>
+    <script src="../src/scroll-manager.js"></script>
 
     <script>
         // Update shader indicator
@@ -1051,9 +1281,9 @@
                     read: { calm: 0.85, flowDir: 90, readTopoFlatten: 0.0, readWhiteBias: 0.0 }
                 },
                 gs3: {
-                    hero: { kGrid: 0.55, kJitter: 0.40, kSize: 0.60, kLaneFreq: 0.55, kLaneWobble: 0.55, kAlpha: 0.90, kCurveAmp: 0.85, kCurveVariety: 0.90, cursorInfluence: 0.25, seed: 13.7 },
-                    ambient: { kGrid: 0.50, kJitter: 0.35, kSize: 0.55, kLaneFreq: 0.50, kLaneWobble: 0.45, kAlpha: 0.85, kCurveAmp: 0.65, kCurveVariety: 0.75, cursorInfluence: 0.20, seed: 13.7 },
-                    read: { kGrid: 0.40, kJitter: 0.25, kSize: 0.45, kLaneFreq: 0.35, kLaneWobble: 0.25, kAlpha: 0.75, kCurveAmp: 0.45, kCurveVariety: 0.55, cursorInfluence: 0.15, seed: 13.7 }
+                    hero: { kGrid: 0.55, kJitter: 0.40, kSize: 0.60, kLaneFreq: 0.55, kLaneWobble: 0.55, kAlpha: 0.90, cursorInfluence: 0.25, seed: 13.7 },
+                    ambient: { kGrid: 0.50, kJitter: 0.35, kSize: 0.55, kLaneFreq: 0.50, kLaneWobble: 0.45, kAlpha: 0.85, cursorInfluence: 0.20, seed: 13.7 },
+                    read: { kGrid: 0.40, kJitter: 0.25, kSize: 0.45, kLaneFreq: 0.35, kLaneWobble: 0.25, kAlpha: 0.75, cursorInfluence: 0.15, seed: 13.7 }
                 }
             };
 
@@ -1068,7 +1298,10 @@
                 bindKeyboardShortcut();
                 restorePanelState();
                 initMetaControls();
-                showControlsFor('gs3', window.__BG3_INSTANCE__);
+
+                // Find the first GS3 section to initialize with
+                const firstSection = document.querySelector('.section[data-shader-system="gs3"]');
+                showControlsFor('gs3', window.__BG3_INSTANCE__, firstSection);
             }
 
             function bindToggleButton() {
@@ -1180,12 +1413,12 @@
                     const attrName = slider.dataset.attr;
                     if (!attrName) return;
 
-                    // First try to get value from the section's data attribute
-                    let value = currentSection.getAttribute(attrName);
+                    // First try to get value from localStorage
+                    let value = getSectionValue(currentSection, attrName);
 
-                    // If not found, try localStorage
+                    // If not found in localStorage, use section's data attribute
                     if (!value) {
-                        value = getSectionValue(currentSection, attrName);
+                        value = currentSection.getAttribute(attrName);
                     }
 
                     if (value) {
@@ -1197,9 +1430,19 @@
                         const numValue = parseFloat(value);
                         if (!isNaN(numValue)) {
                             slider.value = numValue;
+
+                            // CRITICAL: Apply the stored value back to the section HTML attribute
+                            // so the shader actually uses it
+                            const formattedValue = unit ? `${numValue}${unit}` : numValue.toString();
+                            currentSection.setAttribute(attrName, formattedValue);
                         }
                     }
                 });
+
+                // After loading all values, trigger recomputation so shader picks up changes
+                if (currentInstance && typeof currentInstance.computeScrollTargets === 'function') {
+                    currentInstance.computeScrollTargets();
+                }
             }
 
             function getSectionKey(section) {

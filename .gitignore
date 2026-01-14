@@ -10,3 +10,10 @@ npm-debug.log*
 *~
 .env
 .env.local
+
+# Build artifacts (bundled files)
+*.bundle.js
+morphbg-all.complete.js
+
+# Internal development notes (keep local only)
+.dev-notes/

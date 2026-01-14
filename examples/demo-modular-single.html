@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Modular Single Shader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .content {
+            max-width: 800px;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        p {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .file-size {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Canvas for background shader -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Content sections -->
+    <section data-bg-preset="HERO">
+        <div class="content">
+            <h1>Modular Single Shader</h1>
+            <p>This demo loads only <strong>ONE shader</strong> for optimal file size.</p>
+            <p>Uses: Engine (6KB) + GS2 Bundle (7KB) = <strong>~13KB total</strong></p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: HERO</div>
+            <div class="file-size">
+                <strong>3 Scripts:</strong><br>
+                Three.js + gs-engine.js + morphbg-gs2.bundle.js
+            </div>
+        </div>
+    </section>
+
+    <section data-bg-preset="AMBIENT">
+        <div class="content">
+            <h2>Single Shader Optimization</h2>
+            <p>When you only need one shader, the modular approach saves bandwidth.</p>
+            <p>The shader auto-initializes immediately since it's the only one loaded.</p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: AMBIENT</div>
+        </div>
+    </section>
+
+    <section data-bg-preset="ENERGETIC">
+        <div class="content">
+            <h2>Multiple Presets Available</h2>
+            <p>Even with a single shader, you can use different visual presets.</p>
+            <p>Change presets with <code>data-bg-preset="HERO|AMBIENT|CALM|ENERGETIC"</code></p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: ENERGETIC</div>
+        </div>
+    </section>
+
+    <section data-bg-preset="CALM">
+        <div class="content">
+            <h2>Calm Preset</h2>
+            <p>Perfect for reading-heavy pages or subtle backgrounds.</p>
+            <p>Minimal motion with cursor effects disabled.</p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: CALM</div>
+        </div>
+    </section>
+
+    <section data-bg-preset="HERO">
+        <div class="content">
+            <h2>Best For</h2>
+            <p>✓ Landing pages with consistent visual style<br>
+                ✓ Single-page applications<br>
+                ✓ Minimal file size requirements<br>
+                ✓ Fast initial load times</p>
+            <div class="badge">Shader: GS2 (Dynamic Warp) • Preset: HERO</div>
+        </div>
+    </section>
+
+    <!-- Load unbundled source files (works with file:// protocol) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+    <script src="../src/engine.js"></script>
+    <!-- No manager needed for single shader -->
+    <script src="../src/shaders/gs2/config.js"></script>
+    <script src="../src/shaders/gs2/shader.js"></script>
+    <script src="../src/shaders/gs2/adaptor.js"></script>
+    <script src="../src/shaders/gs2/init.js"></script>
+</body>
+
+</html>

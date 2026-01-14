@@ -1,16 +1,14 @@
 {
     "name": "@cael-prussian/morphbg",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "WebGL shader backgrounds for web projects - scroll-responsive and highly customizable",
-    "main": "gs-engine.js",
+    "main": "dist/morphbg-engine.bundle.js",
     "files": [
-        "gs-engine.js",
-        "scroll-shader-manager-simple.js",
-        "gs1/",
-        "gs2/",
-        "gs3/",
+        "dist/",
+        "src/",
         "docs/",
-        "examples/"
+        "examples/",
+        "wiki-content/"
     ],
     "scripts": {
         "prepublishOnly": "npm run build"
