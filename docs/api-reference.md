@@ -2,6 +2,15 @@
 
 Complete API documentation for morphbg shader system.
 
+## Developer Resources
+
+- **[Custom Shader Guide](custom-shader-guide.md)** - Complete guide to building custom shaders
+- **[AI-Assisted Development](ai-shader-development.md)** - Using AI tools for shader development
+- **[Quick Reference](quick-reference.md)** - Fast lookup for common patterns
+- **[Templates](templates/)** - Copy-paste templates for new shaders
+
+---
+
 ## Core Functions
 
 ### `initBGShaderSystem(options)`
