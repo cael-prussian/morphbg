@@ -18,8 +18,6 @@
 
 ## 🚀 Quick Start
 
-**[Try the live demos →](https://cael-prussian.github.io/morphbg/)**
-
 ### Method 1: Complete Bundle (Recommended)
 
 **[→ See this demo live](https://cael-prussian.github.io/morphbg/examples/demo-complete-bundle.html)**
