@@ -18,6 +18,8 @@
 
 ## 🚀 Quick Start
 
+**[Try the live demos →](https://cael-prussian.github.io/morphbg/)**
+
 ### Method 1: Complete Bundle (Recommended)
 
 The simplest way - just 2 script tags:
@@ -105,6 +107,7 @@ Load only specific shaders you need:
 ## 📚 Documentation
 
 - **[Wiki](https://github.com/cael-prussian/morphbg/wiki)** - Full user documentation
+- **[Live Demos](https://cael-prussian.github.io/morphbg/)** - Interactive examples
 - **[API Reference](docs/api-reference.md)** - Complete API documentation
 - **[Examples](examples/)** - Working examples with source code
 - **[Contributing](docs/contributing.md)** - Guide for contributors
@@ -185,4 +188,4 @@ Built with [Three.js](https://threejs.org/)
 
 ---
 
-**[Get Started →](https://github.com/cael-prussian/morphbg/wiki)** | **[View Examples →](examples/)** | **[API Docs →](docs/api-reference.md)**
+**[Get Started →](https://github.com/cael-prussian/morphbg/wiki)** | **[Live Demos →](https://cael-prussian.github.io/morphbg/)** | **[API Docs →](docs/api-reference.md)**
