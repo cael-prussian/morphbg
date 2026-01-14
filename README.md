@@ -44,7 +44,7 @@ The simplest way - just 2 script tags:
     </section>
     
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/dist/morphbg-all.complete.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/dist/morphbg-all.complete.js"></script>
 </body>
 </html>
 ```
@@ -65,11 +65,11 @@ For sites that only need one shader (~13KB gzipped):
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/engine.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs2/config.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs2/shader.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs2/adaptor.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs2/init.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/engine.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs2/config.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs2/shader.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs2/adaptor.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs2/init.js"></script>
 ```
 
 ---
@@ -90,16 +90,16 @@ Load only specific shaders you need:
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/engine.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/scroll-manager.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/engine.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/scroll-manager.js"></script>
 <!-- Load only GS1 -->
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs1/config.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs1/shader.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs1/adaptor.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs1/config.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs1/shader.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs1/adaptor.js"></script>
 <!-- Load only GS3 -->
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs3/config.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs3/shader.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.0.0/src/shaders/gs3/adaptor.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs3/config.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs3/shader.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cael-prussian/morphbg@1.1.0/src/shaders/gs3/adaptor.js"></script>
 ```
 
 ## 📚 Documentation
