@@ -5,10 +5,10 @@
  * Minimal code required - just update the names.
  */
 
-(function() {
+(function () {
     // Wait for engine to be available
     if (typeof window.initBGShaderSystem === 'function') {
-        
+
         /**
          * Initialize your custom shader
          * 
@@ -17,16 +17,25 @@
          * @param {boolean} opts.debug - Enable debug logging
          * @returns {object} Shader system instance
          */
-        window.initCustomShader = function(canvasId, opts = {}) {
+        window.initCustomShader = function (canvasId, opts = {}) {
             return window.initBGShaderSystem({
                 canvasId: canvasId || 'bg-canvas',
-                config: window.CUSTOM_SHADER_CONFIG,
                 fragmentShader: window.BG_CUSTOM_SHADER_FRAG,
+                config: {
+                    modes: {
+                        HERO: 0.8,
+                        AMBIENT: 0.5,
+                        READ: 0.2
+                    },
+                    presets: window.CUSTOM_SHADER_CONFIG,
+                    transitionVh: 0.5,
+                    smoothSpeed: 2.0
+                },
                 adapter: window.CUSTOM_SHADER_ADAPTER,
                 debug: opts.debug || false
             });
         };
-        
+
         console.log('Custom shader initialized. Call window.initCustomShader("bg-canvas") to start.');
     } else {
         console.error('morphbg engine not found. Make sure engine.js is loaded first.');

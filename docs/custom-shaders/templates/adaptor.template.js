@@ -29,7 +29,7 @@ window.CUSTOM_SHADER_ADAPTER = (() => {
     //     accumulate: true/false,        // Should blend during scroll? (default: true)
     //     threeValue: (THREE) => ...    // THREE.js value constructor (for vectors)
     // }
-    
+
     const UNIFORMS = {
         // ---- Example 1: Simple float uniform ----
         density: {
@@ -96,7 +96,7 @@ window.CUSTOM_SHADER_ADAPTER = (() => {
         // Called once during initialization to create Three.js uniforms
         extendUniforms(THREE) {
             const uniforms = {};
-            
+
             for (const [key, def] of Object.entries(UNIFORMS)) {
                 if (def.threeValue) {
                     // Use custom THREE.js value constructor
@@ -116,7 +116,7 @@ window.CUSTOM_SHADER_ADAPTER = (() => {
                     uniforms[def.uniform] = { value: def.default };
                 }
             }
-            
+
             return uniforms;
         },
 
@@ -150,7 +150,7 @@ window.CUSTOM_SHADER_ADAPTER = (() => {
             for (const [key, def] of accumulatedUniforms) {
                 // Get value from HTML attribute or preset or default
                 let value;
-                
+
                 if (section.hasAttribute(def.dataAttr)) {
                     // Parse from data attribute
                     const attrValue = section.getAttribute(def.dataAttr);

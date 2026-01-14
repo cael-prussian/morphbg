@@ -329,9 +329,9 @@ window.initMyShader('bg-canvas', { debug: true });
 
 ## Next Steps
 
-1. **Copy templates** from `docs/templates/`
-2. **Follow guide** in `docs/custom-shader-guide.md`
-3. **Use AI assistance** with `docs/ai-shader-development.md`
+1. **Copy templates** from `templates/`
+2. **Follow guide** in `custom-shader-guide.md`
+3. **Use AI assistance** with `ai-workflow.md`
 4. **Reference existing shaders** in `src/shaders/gs1/`, `gs2/`, `gs3/`
 5. **Test with demo page**
 

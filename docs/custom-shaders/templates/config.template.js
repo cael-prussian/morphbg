@@ -14,7 +14,7 @@ window.CUSTOM_SHADER_CONFIG = {
     // Example: data-shader-mode="flowing"
     // 
     // If you don't need modes, you can omit this or use a single mode.
-    
+
     modes: {
         'default': 0.0,        // Your default visual style
         'alternate': 1.0,      // Alternative visual style
@@ -26,7 +26,7 @@ window.CUSTOM_SHADER_CONFIG = {
     // ==================================================================
     // Define motion levels: HERO (dramatic), AMBIENT (balanced), READ (subtle)
     // Users select presets via: data-shader-preset="HERO"
-    
+
     presets: {
         // ---- HERO PRESET ----
         // Use for: Landing pages, hero sections, attention-grabbing content
@@ -83,7 +83,7 @@ window.CUSTOM_SHADER_CONFIG = {
     // TRANSITION SETTINGS
     // ==================================================================
     // Control how shaders blend during scroll transitions
-    
+
     blendVh: 1.0,              // Viewport heights to blend (1.0 = 100vh)
     transitionVh: 0.5,         // Overlap band for transitions (0.5 = 50vh)
     smoothSpeed: 2.0           // Transition smoothing speed (higher = faster)

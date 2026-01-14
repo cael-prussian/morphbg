@@ -4,10 +4,13 @@ Complete API documentation for morphbg shader system.
 
 ## Developer Resources
 
-- **[Custom Shader Guide](custom-shader-guide.md)** - Complete guide to building custom shaders
-- **[AI-Assisted Development](ai-shader-development.md)** - Using AI tools for shader development
-- **[Quick Reference](quick-reference.md)** - Fast lookup for common patterns
-- **[Templates](templates/)** - Copy-paste templates for new shaders
+**Want to create custom shaders?** See the [Custom Shader Documentation](custom-shaders/)
+
+- **[AI Workflow](custom-shaders/ai-workflow.md)** - Quick AI-assisted development (~10-15 min)
+- **[Complete Guide](custom-shaders/custom-shader-guide.md)** - Manual development walkthrough
+- **[Quick Reference](custom-shaders/quick-reference.md)** - Fast lookup for experienced developers
+- **[Architecture](custom-shaders/architecture.md)** - System design diagrams
+- **[Templates](custom-shaders/templates/)** - Code templates
 
 ---
 

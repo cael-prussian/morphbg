@@ -120,10 +120,12 @@ Load only specific shaders you need:
 
 Create your own custom shaders with morphbg:
 
-- **[Custom Shader Guide](docs/custom-shader-guide.md)** - Complete development guide
-- **[AI-Assisted Development](docs/ai-shader-development.md)** - Use AI tools effectively  
-- **[Quick Reference](docs/quick-reference.md)** - Fast lookup & patterns
-- **[Templates](docs/templates/)** - Copy-paste starter code
+**[→ Custom Shader Documentation](docs/custom-shaders/)**
+
+- **[AI Workflow](docs/custom-shaders/ai-workflow.md)** ⭐ **Recommended** - AI-assisted process with architecture context (~15-20 min)
+- **[Complete Guide](docs/custom-shaders/custom-shader-guide.md)** - Manual development walkthrough
+- **[Quick Reference](docs/custom-shaders/quick-reference.md)** - Fast lookup for experienced devs
+- **[Templates](docs/custom-shaders/templates/)** - Code templates
 
 ## 🎨 Shader Systems
 
