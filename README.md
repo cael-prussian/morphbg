@@ -4,7 +4,7 @@
 
 **morphbg** provides beautiful, performant animated backgrounds using WebGL shaders. Three shader systems, automatic scroll-based transitions, and zero configuration required.
 
-![morphbg demo](https://via.placeholder.com/800x400?text=Demo+GIF+Here)
+**[🎮 Try Live Demos →](https://cael-prussian.github.io/morphbg/)**
 
 ## ✨ Features
 
