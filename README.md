@@ -116,6 +116,15 @@ Load only specific shaders you need:
 - **[Examples](examples/)** - Working examples with source code
 - **[Contributing](docs/contributing.md)** - Guide for contributors
 
+### 🎨 For Shader Developers
+
+Create your own custom shaders with morphbg:
+
+- **[Custom Shader Guide](docs/custom-shader-guide.md)** - Complete development guide
+- **[AI-Assisted Development](docs/ai-shader-development.md)** - Use AI tools effectively  
+- **[Quick Reference](docs/quick-reference.md)** - Fast lookup & patterns
+- **[Templates](docs/templates/)** - Copy-paste starter code
+
 ## 🎨 Shader Systems
 
 ### GS1: Topographic Flow
