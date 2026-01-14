@@ -1,0 +1,53 @@
+{
+    "name": "@cael-prussian/morphbg",
+    "version": "1.0.0",
+    "description": "WebGL shader backgrounds for web projects - scroll-responsive and highly customizable",
+    "main": "gs-engine.js",
+    "files": [
+        "gs-engine.js",
+        "scroll-shader-manager-simple.js",
+        "gs1/",
+        "gs2/",
+        "gs3/",
+        "docs/",
+        "examples/"
+    ],
+    "scripts": {
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "webgl",
+        "shader",
+        "three.js",
+        "threejs",
+        "background",
+        "animation",
+        "scroll",
+        "glsl",
+        "fragment-shader",
+        "topographic",
+        "glitch",
+        "dots",
+        "canvas",
+        "generative",
+        "art",
+        "no-code"
+    ],
+    "author": "Your Name <cael@hellospruce.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cael-prussian/morphbg.git"
+    },
+    "bugs": {
+        "url": "https://github.com/cael-prussian/morphbg/issues"
+    },
+    "homepage": "https://github.com/cael-prussian/morphbg#readme",
+    "peerDependencies": {
+        "three": ">=0.150.0"
+    },
+    "devDependencies": {},
+    "engines": {
+        "node": ">=14.0.0"
+    }
+}

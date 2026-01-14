@@ -1,0 +1,867 @@
+<!-- ============================= -->
+<!-- Universal Shader Config Panel -->
+<!-- ============================= -->
+
+<style>
+  #shader-config-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 320px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    z-index: 9999;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  #shader-config-panel.hidden {
+    transform: translateX(calc(100% + 32px));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #shader-config-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  #shader-config-panel .panel-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  #shader-config-panel .shader-indicator {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(136, 12, 80, 0.4);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  #shader-config-panel .close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  #shader-config-panel .close-btn:hover {
+    color: #fff;
+  }
+
+  #shader-config-panel .control-section {
+    display: none;
+  }
+
+  #shader-config-panel .control-section.active {
+    display: block;
+  }
+
+  #shader-config-panel .section-header {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 16px 0 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0.85;
+  }
+
+  #shader-config-panel .section-header:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  #shader-config-panel label {
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  #shader-config-panel label.highlight {
+    background: rgba(255, 193, 7, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 3px solid rgba(255, 193, 7, 0.6);
+  }
+
+  #shader-config-panel .label-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  #shader-config-panel .label-text {
+    opacity: 0.8;
+    font-size: 12px;
+  }
+
+  #shader-config-panel .value-display {
+    font-weight: 600;
+    font-size: 12px;
+    color: rgba(136, 12, 80, 1);
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  #shader-config-panel input[type="range"] {
+    width: 100%;
+    margin: 4px 0;
+  }
+
+  #shader-config-panel .step-toggle,
+  #shader-config-panel .direction-presets,
+  #shader-config-panel .preset-buttons,
+  #shader-config-panel .density-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  #shader-config-panel .step-toggle label {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  #shader-config-panel .step-toggle input[type="radio"] {
+    margin-right: 4px;
+  }
+
+  #shader-config-panel button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  #shader-config-panel button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  #shader-config-panel button.active {
+    background: rgba(136, 12, 80, 0.6);
+    border-color: rgba(136, 12, 80, 0.8);
+  }
+
+  #shader-config-panel .extra-info {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 4px;
+  }
+
+  #shader-config-panel .lane-count {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-left: 8px;
+  }
+
+  /* Toggle button (when panel is hidden) */
+  #config-toggle-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 56px;
+    height: 56px;
+    background: rgba(136, 12, 80, 0.9);
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #config-toggle-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #config-toggle-btn:hover {
+    background: rgba(136, 12, 80, 1);
+    transform: scale(1.05);
+  }
+
+  /* Scrollbar styling */
+  #shader-config-panel::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #shader-config-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  #shader-config-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  #shader-config-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+</style>
+
+<!-- Config Panel -->
+<div id="shader-config-panel">
+  <div class="panel-header">
+    <div>
+      <h3 class="panel-title">Shader Controls</h3>
+      <span class="shader-indicator" id="current-shader-indicator">GS3</span>
+    </div>
+    <button class="close-btn" id="close-panel-btn" title="Close (Ctrl+K)">&times;</button>
+  </div>
+
+  <!-- GS1 Controls (Topographic) -->
+  <div class="control-section" data-shader="gs1">
+    <div class="section-header">Topographic Parameters</div>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Topo Flatten</span>
+        <span class="value-display" data-display="readTopoFlatten">0.0</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.0" data-uniform="readTopoFlatten"
+        data-attr="data-read-topo-flatten">
+      <div class="extra-info">Smooths topology: 0=natural contours, 1=flattened</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">White Bias (Brightness)</span>
+        <span class="value-display" data-display="readWhiteBias">0.0</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.0" data-uniform="readWhiteBias"
+        data-attr="data-read-white-bias">
+      <div class="extra-info">Adds brightness: 0=natural colors, 1=white</div>
+    </label>
+
+    <div class="preset-buttons">
+      <button data-preset="hero" data-shader="gs1">Hero</button>
+      <button data-preset="ambient" data-shader="gs1">Ambient</button>
+      <button data-preset="read" data-shader="gs1">Read</button>
+    </div>
+  </div>
+
+  <!-- GS2 Controls (Glitch) -->
+  <div class="control-section" data-shader="gs2">
+    <div class="section-header">Primary Controls</div>
+
+    <label class="highlight">
+      <div class="label-header">
+        <span class="label-text">⚡ Calm (Motion Intensity)</span>
+        <span class="value-display" data-display="calm">0.45</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.45" data-uniform="calm" data-attr="data-calm"
+        id="gs2-calm-slider">
+      <div class="extra-info">PRIMARY control: 0=chaos, 1=calm</div>
+      <div class="step-toggle">
+        <label>
+          <input type="radio" name="calm-step" value="0.1"> Coarse (0.1)
+        </label>
+        <label>
+          <input type="radio" name="calm-step" value="0.01" checked> Fine (0.01)
+        </label>
+      </div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Flow Direction</span>
+        <span class="value-display" data-display="flowDir">45°</span>
+      </div>
+      <input type="range" min="0" max="360" step="1" value="45" data-uniform="flowDir" data-attr="data-flow-dir"
+        data-unit="deg">
+      <div class="direction-presets">
+        <button data-value="0" data-target="flowDir">→</button>
+        <button data-value="45" data-target="flowDir">↗</button>
+        <button data-value="90" data-target="flowDir">↑</button>
+        <button data-value="135" data-target="flowDir">↖</button>
+        <button data-value="180" data-target="flowDir">←</button>
+        <button data-value="270" data-target="flowDir">↓</button>
+      </div>
+    </label>
+
+    <div class="section-header">Secondary Controls</div>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Grid Fill Density</span>
+        <span class="value-display" data-display="gridSmallFills">1.0</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="1.0" data-uniform="gridSmallFills"
+        data-attr="data-grid-small-fills">
+      <div class="extra-info">Colored rectangles: 0=none, 1=all filled</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Effect Flatten</span>
+        <span class="value-display" data-display="readTopoFlatten">0.0</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.0" data-uniform="readTopoFlatten"
+        data-attr="data-read-topo-flatten">
+      <div class="extra-info">Reduces glitch intensity (less used than calm)</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">White Bias (Brightness)</span>
+        <span class="value-display" data-display="readWhiteBias">0.0</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.0" data-uniform="readWhiteBias"
+        data-attr="data-read-white-bias">
+      <div class="extra-info">Lightens technical aesthetic</div>
+    </label>
+
+    <div class="preset-buttons">
+      <button data-preset="hero" data-shader="gs2">Hero</button>
+      <button data-preset="ambient" data-shader="gs2">Ambient</button>
+      <button data-preset="read" data-shader="gs2">Read</button>
+    </div>
+  </div>
+
+  <!-- GS3 Controls (Kusama Dots) -->
+  <div class="control-section active" data-shader="gs3">
+    <div class="section-header">Kusama Knobs (Primary)</div>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Grid Density (Lane Count)</span>
+        <span class="value-display" data-display="kGrid">0.5<span class="lane-count">7 lanes</span></span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.5" data-uniform="kGrid" data-attr="data-kusama-k-grid">
+      <div class="extra-info">3 to 11 lanes: 0=sparse, 1=dense</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Jitter (Organic Scatter)</span>
+        <span class="value-display" data-display="kJitter">0.35</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.35" data-uniform="kJitter"
+        data-attr="data-kusama-k-jitter">
+      <div class="extra-info">0=grid aligned, 1=hand-painted scatter</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Dot Size</span>
+        <span class="value-display" data-display="kSize">0.55</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.55" data-uniform="kSize" data-attr="data-kusama-k-size">
+      <div class="extra-info">Base diameter: 0=tiny, 1=large</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Vertical Density (Spacing)</span>
+        <span class="value-display" data-display="kLaneFreq">0.5</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.5" data-uniform="kLaneFreq"
+        data-attr="data-kusama-k-lane-freq">
+      <div class="extra-info">0=sparse vertically, 1=tightly packed</div>
+    </label>
+
+    <label class="highlight">
+      <div class="label-header">
+        <span class="label-text">⚡ Lane Wobble (Motion)</span>
+        <span class="value-display" data-display="kLaneWobble">0.5</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.5" data-uniform="kLaneWobble"
+        data-attr="data-kusama-k-lane-wobble" id="gs3-wobble-slider">
+      <div class="extra-info">PRIMARY motion control: 0=static, 1=waves</div>
+      <div class="step-toggle">
+        <label>
+          <input type="radio" name="wobble-step" value="0.1"> Coarse (0.1)
+        </label>
+        <label>
+          <input type="radio" name="wobble-step" value="0.01" checked> Fine (0.01)
+        </label>
+      </div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Opacity (Ink Darkness)</span>
+        <span class="value-display" data-display="kAlpha">0.9</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.9" data-uniform="kAlpha" data-attr="data-kusama-k-alpha">
+      <div class="extra-info">Dot opacity: 0=invisible, 1=strong</div>
+    </label>
+
+    <div class="section-header">Technical Parameters</div>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Cursor Influence</span>
+        <span class="value-display" data-display="cursorInfluence">0.20</span>
+      </div>
+      <input type="range" min="0" max="1" step="0.01" value="0.20" data-uniform="cursorInfluence"
+        data-attr="data-kusama-cursor-influence">
+      <div class="extra-info">Mouse interaction strength</div>
+    </label>
+
+    <label>
+      <div class="label-header">
+        <span class="label-text">Random Seed</span>
+        <span class="value-display" data-display="seed">13.7</span>
+      </div>
+      <input type="range" min="0" max="100" step="1" value="13.7" data-uniform="seed" data-attr="data-kusama-seed">
+      <button class="randomize-seed" style="margin-top: 8px;">🎲 Randomize Seed</button>
+      <div class="extra-info">Pattern variation (causes visible jump)</div>
+    </label>
+
+    <div class="preset-buttons">
+      <button data-preset="hero" data-shader="gs3">Hero (Blob)</button>
+      <button data-preset="ambient" data-shader="gs3">Ambient</button>
+      <button data-preset="read" data-shader="gs3">Read</button>
+    </div>
+
+    <div class="density-presets" style="margin-top: 12px;">
+      <button data-grid="0.3" data-freq="0.3">Sparse</button>
+      <button data-grid="0.5" data-freq="0.5">Medium</button>
+      <button data-grid="0.7" data-freq="0.7">Dense</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toggle Button (shown when panel is hidden) -->
+<button id="config-toggle-btn" title="Open Config Panel (Ctrl+K)">⚙️</button>
+
+<script>
+  /* ==========================================
+     Universal Config Form Manager
+     ========================================== */
+  window.ConfigFormManager = (() => {
+    let panelVisible = true;
+    let currentShader = 'gs3';
+    let currentInstance = null;
+
+    const panel = document.getElementById('shader-config-panel');
+    const toggleBtn = document.getElementById('config-toggle-btn');
+    const closeBtn = document.getElementById('close-panel-btn');
+    const indicator = document.getElementById('current-shader-indicator');
+
+    // Preset values for each shader
+    const PRESETS = {
+      gs1: {
+        hero: { readTopoFlatten: 0.0, readWhiteBias: 0.0 },
+        ambient: { readTopoFlatten: 0.0, readWhiteBias: 0.0 },
+        read: { readTopoFlatten: 0.0, readWhiteBias: 0.0 }
+      },
+      gs2: {
+        hero: { calm: 0.05, flowDir: 0, readTopoFlatten: 0.0, readWhiteBias: 0.0 },
+        ambient: { calm: 0.45, flowDir: 45, readTopoFlatten: 0.0, readWhiteBias: 0.0 },
+        read: { calm: 0.85, flowDir: 90, readTopoFlatten: 0.0, readWhiteBias: 0.0 }
+      },
+      gs3: {
+        hero: { kGrid: 0.55, kJitter: 0.40, kSize: 0.60, kLaneFreq: 0.55, kLaneWobble: 0.55, kAlpha: 0.90, cursorInfluence: 0.25, seed: 13.7 },
+        ambient: { kGrid: 0.50, kJitter: 0.35, kSize: 0.55, kLaneFreq: 0.50, kLaneWobble: 0.45, kAlpha: 0.85, cursorInfluence: 0.20, seed: 13.7 },
+        read: { kGrid: 0.40, kJitter: 0.25, kSize: 0.45, kLaneFreq: 0.35, kLaneWobble: 0.25, kAlpha: 0.75, cursorInfluence: 0.15, seed: 13.7 }
+      }
+    };
+
+    function init() {
+      bindToggleButton();
+      bindCloseButton();
+      bindKeyboardShortcut();
+      restorePanelState();
+
+      // Show GS3 controls by default
+      showControlsFor('gs3', window.__BG3_INSTANCE__);
+    }
+
+    function bindToggleButton() {
+      if (!toggleBtn) return;
+      toggleBtn.addEventListener('click', () => {
+        showPanel();
+      });
+    }
+
+    function bindCloseButton() {
+      if (!closeBtn) return;
+      closeBtn.addEventListener('click', () => {
+        hidePanel();
+      });
+    }
+
+    function bindKeyboardShortcut() {
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          togglePanel();
+        }
+      });
+    }
+
+    function showPanel() {
+      panelVisible = true;
+      if (panel) panel.classList.remove('hidden');
+      if (toggleBtn) toggleBtn.classList.remove('visible');
+      savePanelState();
+    }
+
+    function hidePanel() {
+      panelVisible = false;
+      if (panel) panel.classList.add('hidden');
+      if (toggleBtn) toggleBtn.classList.add('visible');
+      savePanelState();
+    }
+
+    function togglePanel() {
+      if (panelVisible) {
+        hidePanel();
+      } else {
+        showPanel();
+      }
+    }
+
+    function savePanelState() {
+      try {
+        localStorage.setItem('shaderConfigPanelVisible', panelVisible ? '1' : '0');
+      } catch (e) {
+        // Ignore localStorage errors
+      }
+    }
+
+    function restorePanelState() {
+      try {
+        const saved = localStorage.getItem('shaderConfigPanelVisible');
+        if (saved === '0') {
+          hidePanel();
+        } else {
+          showPanel();
+        }
+      } catch (e) {
+        // Ignore localStorage errors, default to visible
+      }
+    }
+
+    function showControlsFor(shaderId, instance) {
+      currentShader = shaderId;
+      currentInstance = instance;
+
+      // Update indicator
+      if (indicator) {
+        indicator.textContent = shaderId.toUpperCase();
+      }
+
+      // Hide all control sections
+      document.querySelectorAll('.control-section').forEach(section => {
+        section.classList.remove('active');
+      });
+
+      // Show active section
+      const activeSection = document.querySelector(`.control-section[data-shader="${shaderId}"]`);
+      if (activeSection) {
+        activeSection.classList.add('active');
+      }
+
+      // Bind sliders and buttons for this shader
+      bindSliders(shaderId);
+      bindPresetButtons(shaderId);
+      bindDirectionPresets(shaderId);
+      bindStepToggles(shaderId);
+      bindDensityPresets(shaderId);
+      bindSeedRandomizer(shaderId);
+
+      updateValueDisplays();
+    }
+
+    function bindSliders(shaderId) {
+      const section = document.querySelector(`.control-section[data-shader="${shaderId}"]`);
+      if (!section) return;
+
+      const sliders = section.querySelectorAll('input[type="range"]');
+
+      sliders.forEach(slider => {
+        // Remove old listeners by cloning
+        const newSlider = slider.cloneNode(true);
+        slider.parentNode.replaceChild(newSlider, slider);
+
+        newSlider.addEventListener('input', (e) => {
+          const value = e.target.value;
+          const attrName = e.target.dataset.attr;
+          const unit = e.target.dataset.unit || '';
+
+          updateParameter(attrName, value, unit);
+        });
+      });
+    }
+
+    function bindPresetButtons(shaderId) {
+      const buttons = document.querySelectorAll(`button[data-preset][data-shader="${shaderId}"]`);
+
+      buttons.forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.addEventListener('click', () => {
+          const presetName = newButton.dataset.preset;
+          loadPreset(shaderId, presetName);
+        });
+      });
+    }
+
+    function bindDirectionPresets(shaderId) {
+      if (shaderId !== 'gs2') return;
+
+      const buttons = document.querySelectorAll('button[data-value][data-target="flowDir"]');
+
+      buttons.forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.addEventListener('click', () => {
+          const value = newButton.dataset.value;
+          const slider = document.querySelector('input[data-uniform="flowDir"]');
+          if (slider) {
+            slider.value = value;
+            updateParameter('data-flow-dir', value, 'deg');
+          }
+        });
+      });
+    }
+
+    function bindStepToggles(shaderId) {
+      // Calm step toggle (GS2)
+      if (shaderId === 'gs2') {
+        const radios = document.querySelectorAll('input[name="calm-step"]');
+        radios.forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const slider = document.getElementById('gs2-calm-slider');
+            if (slider) slider.step = e.target.value;
+          });
+        });
+      }
+
+      // Wobble step toggle (GS3)
+      if (shaderId === 'gs3') {
+        const radios = document.querySelectorAll('input[name="wobble-step"]');
+        radios.forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const slider = document.getElementById('gs3-wobble-slider');
+            if (slider) slider.step = e.target.value;
+          });
+        });
+      }
+    }
+
+    function bindDensityPresets(shaderId) {
+      if (shaderId !== 'gs3') return;
+
+      const buttons = document.querySelectorAll('button[data-grid][data-freq]');
+
+      buttons.forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.addEventListener('click', () => {
+          const gridValue = newButton.dataset.grid;
+          const freqValue = newButton.dataset.freq;
+
+          const gridSlider = document.querySelector('input[data-uniform="kGrid"]');
+          const freqSlider = document.querySelector('input[data-uniform="kLaneFreq"]');
+
+          if (gridSlider) {
+            gridSlider.value = gridValue;
+            updateParameter('data-kusama-k-grid', gridValue, '');
+          }
+          if (freqSlider) {
+            freqSlider.value = freqValue;
+            updateParameter('data-kusama-k-lane-freq', freqValue, '');
+          }
+        });
+      });
+    }
+
+    function bindSeedRandomizer(shaderId) {
+      if (shaderId !== 'gs3') return;
+
+      const button = document.querySelector('.randomize-seed');
+      if (!button) return;
+
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+
+      newButton.addEventListener('click', () => {
+        const randomSeed = Math.floor(Math.random() * 100);
+        const slider = document.querySelector('input[data-uniform="seed"]');
+        if (slider) {
+          slider.value = randomSeed;
+          updateParameter('data-kusama-seed', randomSeed, '');
+        }
+      });
+    }
+
+    function loadPreset(shaderId, presetName) {
+      const preset = PRESETS[shaderId]?.[presetName];
+      if (!preset) {
+        console.warn(`No preset found: ${shaderId}/${presetName}`);
+        return;
+      }
+
+      // Update all sliders for this preset
+      for (const [uniformName, value] of Object.entries(preset)) {
+        const slider = document.querySelector(`input[data-uniform="${uniformName}"]`);
+        if (slider) {
+          slider.value = value;
+          const attrName = slider.dataset.attr;
+          const unit = slider.dataset.unit || '';
+          updateParameter(attrName, value, unit);
+        }
+      }
+    }
+
+    function updateParameter(attrName, value, unit) {
+      // Find all sections (could be multiple with same attribute)
+      const sections = document.querySelectorAll('[data-shader-mode], [data-shader-preset]');
+
+      // Format value with unit if provided
+      const formattedValue = unit ? `${value}${unit}` : value;
+
+      // Update data attributes on all sections
+      sections.forEach(section => {
+        section.setAttribute(attrName, formattedValue);
+      });
+
+      // Trigger recomputation if instance available
+      if (currentInstance && typeof currentInstance.computeScrollTargets === 'function') {
+        currentInstance.computeScrollTargets();
+      }
+
+      // Update value displays
+      updateValueDisplays();
+
+      // Update lane count for grid slider (GS3 specific)
+      if (attrName === 'data-kusama-k-grid') {
+        updateLaneCount(parseFloat(value));
+      }
+    }
+
+    function updateValueDisplays() {
+      const section = document.querySelector(`.control-section[data-shader="${currentShader}"]`);
+      if (!section) return;
+
+      const sliders = section.querySelectorAll('input[type="range"]');
+
+      sliders.forEach(slider => {
+        const uniformName = slider.dataset.uniform;
+        const display = section.querySelector(`[data-display="${uniformName}"]`);
+        const unit = slider.dataset.unit;
+
+        if (display) {
+          let displayValue = parseFloat(slider.value).toFixed(2);
+          if (unit) {
+            displayValue += unit;
+          }
+
+          // Update only the numeric part, preserve lane count span if it exists
+          if (uniformName === 'kGrid') {
+            const laneSpan = display.querySelector('.lane-count');
+            if (laneSpan) {
+              display.childNodes[0].textContent = displayValue;
+            } else {
+              display.textContent = displayValue;
+            }
+          } else {
+            display.textContent = displayValue;
+          }
+        }
+      });
+    }
+
+    function updateLaneCount(gridValue) {
+      const laneCount = 3 + Math.floor(8.0 * gridValue);
+      const display = document.querySelector('[data-display="kGrid"] .lane-count');
+      if (display) {
+        display.textContent = `${laneCount} lanes`;
+      }
+    }
+
+    // Public API
+    return {
+      init,
+      showControlsFor,
+      togglePanel,
+      showPanel,
+      hidePanel
+    };
+  })();
+
+  /* ==========================================
+     Auto-initialize when ready
+     ========================================== */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      ConfigFormManager.init();
+    });
+  } else {
+    ConfigFormManager.init();
+  }
+
+  /* ==========================================
+     Helper: Wait for shader instance
+     ========================================== */
+  function whenShaderReady(instanceName, callback) {
+    if (window[instanceName] && window[instanceName].computeScrollTargets) {
+      callback(window[instanceName]);
+      return;
+    }
+
+    let tries = 0;
+    const MAX_TRIES = 240; // ~4 seconds @60fps
+
+    function tick() {
+      if (window[instanceName] && window[instanceName].computeScrollTargets) {
+        callback(window[instanceName]);
+      } else if (++tries < MAX_TRIES) {
+        requestAnimationFrame(tick);
+      } else {
+        console.warn(`${instanceName} never became ready`);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // Expose helper globally for ShaderManager integration
+  window.whenShaderReady = whenShaderReady;
+</script>
