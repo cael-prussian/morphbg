@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>morphbg - WebGL Background Shaders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .version {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            margin: 2rem 0;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .demo-grid {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .demo-link {
+            display: block;
+            padding: 1.2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .demo-link:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .demo-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .demo-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>morphbg</h1>
+        <p class="subtitle">WebGL Background Shaders for Modern Websites</p>
+        <span class="version">v1.1.0</span>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-text">3 Shader Systems</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">60fps Performance</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📦</div>
+                <div class="feature-text">Zero Config</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📺 Live Demos</h2>
+            <div class="demo-grid">
+                <a href="examples/demo.html" class="demo-link">
+                    <div class="demo-title">Complete Demo</div>
+                    <div class="demo-desc">All three shaders with scroll transitions</div>
+                </a>
+                
+                <a href="examples/demo-complete-bundle.html" class="demo-link">
+                    <div class="demo-title">Complete Bundle</div>
+                    <div class="demo-desc">Single script approach (~25KB)</div>
+                </a>
+                
+                <a href="examples/demo-modular-single.html" class="demo-link">
+                    <div class="demo-title">Single Shader (Modular)</div>
+                    <div class="demo-desc">Load only one shader (~13KB)</div>
+                </a>
+                
+                <a href="examples/demo-modular-multi.html" class="demo-link">
+                    <div class="demo-title">Multi-Shader (Modular)</div>
+                    <div class="demo-desc">Load only shaders you need</div>
+                </a>
+                
+                <a href="examples/config-form.html" class="demo-link">
+                    <div class="demo-title">Interactive Config</div>
+                    <div class="demo-desc">Test all parameters with live controls</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📚 Documentation</h2>
+            <div class="demo-grid">
+                <a href="https://github.com/cael-prussian/morphbg/wiki" class="demo-link">
+                    <div class="demo-title">Getting Started</div>
+                    <div class="demo-desc">Quick start guide and basics</div>
+                </a>
+                
+                <a href="https://github.com/cael-prussian/morphbg/wiki/Installation" class="demo-link">
+                    <div class="demo-title">Installation</div>
+                    <div class="demo-desc">CDN, npm, and deployment options</div>
+                </a>
+                
+                <a href="https://github.com/cael-prussian/morphbg/wiki/Shader-Systems" class="demo-link">
+                    <div class="demo-title">Shader Systems</div>
+                    <div class="demo-desc">GS1, GS2, GS3 modes and parameters</div>
+                </a>
+                
+                <a href="https://github.com/cael-prussian/morphbg/wiki/Configuration" class="demo-link">
+                    <div class="demo-title">Configuration</div>
+                    <div class="demo-desc">Complete parameter reference</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="links">
+            <a href="https://github.com/cael-prussian/morphbg" class="btn btn-primary">
+                View on GitHub
+            </a>
+            <a href="https://github.com/cael-prussian/morphbg/wiki" class="btn btn-secondary">
+                Read Docs
+            </a>
+        </div>
+    </div>
+</body>
+</html>
