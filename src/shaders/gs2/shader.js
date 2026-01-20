@@ -6,6 +6,10 @@ uniform vec2  u_mouse;
 uniform float u_time;
 uniform float u_mode;
 
+uniform float u_modeWeight0;
+uniform float u_modeWeight1;
+uniform float u_modeWeight2;
+
 uniform float u_heroAlwaysOnK;
 uniform float u_spatialMotion;
 uniform float u_temporalMotion;
@@ -1439,10 +1443,10 @@ void main() {
   vec2 uvN = v_uv;
   vec3 col;
 
-  // Compute blend weights for smooth transitions
-  float m0 = 1.0 - smoothstep(0.35, 0.90, abs(u_mode - 0.0));
-  float m1 = 1.0 - smoothstep(0.35, 0.90, abs(u_mode - 1.0));
-  float m2 = 1.0 - smoothstep(0.35, 0.90, abs(u_mode - 2.0));
+  // Use mode weights provided by the engine
+  float m0 = u_modeWeight0;
+  float m1 = u_modeWeight1;
+  float m2 = u_modeWeight2;
 
   // Branch: execute only modes with non-zero weight
   // This preserves smooth transitions while avoiding redundant computation

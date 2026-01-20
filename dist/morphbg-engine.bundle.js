@@ -83,6 +83,11 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
             u_resolution: { value: new THREE.Vector2() },
             u_mouse: { value: mouse.clone() },
             u_mode: { value: 0 },
+            
+            // Mode weights from engine (which modes are actually visible)
+            u_modeWeight0: { value: 1.0 },
+            u_modeWeight1: { value: 0.0 },
+            u_modeWeight2: { value: 0.0 },
 
             u_spatialMotion: { value: basePreset.spatial },
             u_temporalMotion: { value: basePreset.temporal },
@@ -267,6 +272,9 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         let strongestW = 0;
         let strongestPreset = lastPreset;
         let strongestMode = lastMode;
+        
+        // Track top 2 modes for proper blending (avoid averaging 0+2=1)
+        let modes = []; // [{mode: 'modeName', value: 0.0, weight: 0.0}, ...]
 
         const acc = {
             spatial: 0, temporal: 0, cursor: 0, calm: 0,
@@ -321,6 +329,15 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
 
             totalW += w;
             modeSum += modeNameToValue(modeName) * w;
+            
+            // Track this mode for smart blending
+            const modeValue = modeNameToValue(modeName);
+            const existing = modes.find(m => m.value === modeValue);
+            if (existing) {
+                existing.weight += w;
+            } else {
+                modes.push({ mode: modeName, value: modeValue, weight: w });
+            }
 
             acc.spatial += preset.spatial * w;
             acc.temporal += preset.temporal * w;
@@ -333,6 +350,56 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
             }
         }
 
+        // Smart mode blending: only blend between top 2 modes to avoid 0+2=1 averaging
+        modes.sort((a, b) => b.weight - a.weight);
+        
+        // Initialize mode weights to pass to shader
+        const modeWeights = [0, 0, 0];
+        
+        if (modes.length >= 2) {
+            const top1 = modes[0];
+            const top2 = modes[1];
+            const blendW = top1.weight + top2.weight;
+            if (blendW > 0.001) {
+                // Only blend between these two modes
+                targetMode = (top1.value * top1.weight + top2.value * top2.weight) / blendW;
+                
+                // Pass normalized weights to shader (convert mode values to int indices)
+                const idx1 = Math.round(top1.value);
+                const idx2 = Math.round(top2.value);
+                modeWeights[idx1] = top1.weight / blendW;
+                modeWeights[idx2] = top2.weight / blendW;
+                
+                if (DEBUG) {
+                    console.log(`[morphbg] Smart blend: ${top1.mode}(${top1.value}) w=${top1.weight.toFixed(2)} + ${top2.mode}(${top2.value}) w=${top2.weight.toFixed(2)} = targetMode=${targetMode.toFixed(2)}`);
+                    console.log(`[morphbg] Mode weights: [${modeWeights.map(w => w.toFixed(2)).join(', ')}]`);
+                }
+            } else {
+                targetMode = modeSum / totalW;
+                if (DEBUG) {
+                    console.log(`[morphbg] Fallback blend: modeSum=${modeSum.toFixed(2)} / totalW=${totalW.toFixed(2)} = ${targetMode.toFixed(2)}`);
+                }
+            }
+        } else if (modes.length === 1) {
+            targetMode = modes[0].value;
+            const idx = Math.round(modes[0].value);
+            modeWeights[idx] = 1.0;
+            if (DEBUG) {
+                console.log(`[morphbg] Single mode: ${modes[0].mode}(${modes[0].value})`);
+                console.log(`[morphbg] Mode weights: [${modeWeights.map(w => w.toFixed(2)).join(', ')}]`);
+            }
+        } else {
+            targetMode = modeSum / totalW;
+            if (DEBUG) {
+                console.log(`[morphbg] No modes: using modeSum=${modeSum.toFixed(2)} / totalW=${totalW.toFixed(2)} = ${targetMode.toFixed(2)}`);
+            }
+        }
+        
+        // Update mode weight uniforms (these don't lerp, they're instant)
+        material.uniforms.u_modeWeight0.value = modeWeights[0];
+        material.uniforms.u_modeWeight1.value = modeWeights[1];
+        material.uniforms.u_modeWeight2.value = modeWeights[2];
+        
         if (strongestW > 0.001) {
             lastPreset = strongestPreset;
             lastMode = strongestMode;
@@ -356,8 +423,6 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
                 ADAPTER.accumulateBaseline({ need, acc: accExtra, material, clamp01 });
             }
         }
-
-        targetMode = modeSum / totalW;
 
         // Base target values from universal presets
         let nextTarget = {
@@ -412,8 +477,12 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         animationId = requestAnimationFrame(animate);
 
         const now = performance.now() * 0.001;
-        const dt = now - lastTime;
+        let dt = now - lastTime;
         lastTime = now;
+
+        // Clamp dt to avoid large jumps after tab inactivity or long idle
+        const MAX_DT = 0.12; // ~8 FPS, prevents sudden lerp jumps
+        if (dt > MAX_DT) dt = MAX_DT;
 
         // --- FPS cap ---
         const fps = desiredFps();
@@ -498,7 +567,6 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         }
     };
 };
-
 
 /**
  * ScrollShaderManager - Scroll-based shader switching (single canvas)

@@ -269,7 +269,17 @@ window.CUSTOM_SHADER_ADAPTER = (() => {
    - Provide threeValue for custom construction
    - Data attributes: "1.0,0.5,0.2" (comma-separated)
 
+
+
 6. DEBUGGING:
-   Enable debug mode to see uniform values:
-   window.initCustomShader('bg-canvas', { debug: true });
+    Enable debug mode to see uniform values:
+    window.initCustomShader('bg-canvas', { debug: true });
+
+    // ADVANCED: For verbose adaptor logs (uniform accumulation, blending), you may implement:
+    //   if (window.DEBUG_MORPHBG) { ... }
+    // See GS1's TopoReadAdapter for a reference implementation. This is not enabled by default in all adaptors.
+
+    // ADVANCED: For verbose adaptor logs (uniform accumulation, blending), set in browser console:
+    //   window.DEBUG_MORPHBG = true;
+    // This will print detailed logs if your adaptor implements debug logging (see GS1 example).
 */

@@ -57,7 +57,6 @@ window.BG_TopoReadAdapter = (() => {
                 let value;
 
                 if (def.useMaterialFallback) {
-                    // Preset-driven: fallback to current material value
                     value = parseFloat(el.getAttribute(def.dataAttr)) || material.uniforms[def.uniform]?.value || def.default;
                 } else {
                     value = parseFloat(el.getAttribute(def.dataAttr)) || def.default;
@@ -69,6 +68,11 @@ window.BG_TopoReadAdapter = (() => {
                     value = clamp01(value);
                 }
 
+                if (window.DEBUG_MORPHBG) {
+                    const preset = el.getAttribute('data-shader-preset') || 'unknown';
+                    const mode = el.getAttribute('data-shader-mode') || 'unknown';
+                    console.log(`[adaptor] accumulateFromSection: preset=${preset}, mode=${mode}, key=${key}, value=${value}, w=${w}, acc=${acc[key]}`);
+                }
                 acc[key] += value * w;
             }
         },
@@ -85,6 +89,9 @@ window.BG_TopoReadAdapter = (() => {
 
             for (const [key] of accumulatedUniforms) {
                 next[key] = acc[key] * invW;
+                if (window.DEBUG_MORPHBG) {
+                    console.log(`[adaptor] finalizeTargets: key=${key}, acc=${acc[key]}, totalW=${totalW}, next=${next[key]}`);
+                }
             }
 
             return { target: next };

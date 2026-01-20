@@ -35,7 +35,9 @@ Understanding how components work together.
 ## Component Responsibilities
 
 ### 1. Engine (`engine.js`)
+
 **What it does:**
+
 - Monitors scroll position
 - Detects which sections are visible
 - Calculates scroll weights
@@ -44,6 +46,7 @@ Understanding how components work together.
 - Smooths transitions
 
 **What you don't touch:**
+
 - Scroll detection logic
 - Rendering pipeline
 - Transition algorithms
@@ -51,12 +54,15 @@ Understanding how components work together.
 ---
 
 ### 2. Your Shader (`shader.js`)
+
 **What it does:**
+
 - Defines visual appearance (GLSL)
 - Receives uniforms from engine + adapter
 - Outputs pixel colors
 
 **What you write:**
+
 ```glsl
 // Your creative visual logic
 void main() {
@@ -67,6 +73,7 @@ void main() {
 ```
 
 **What you don't touch:**
+
 - Uniform management
 - Scroll-based blending
 - Rendering lifecycle
@@ -74,13 +81,16 @@ void main() {
 ---
 
 ### 3. Config (`config.js`)
+
 **What it does:**
+
 - Defines visual modes (e.g., flowing, chaotic, calm)
 - Defines presets (HERO, AMBIENT, READ)
 - Sets custom uniform values per preset
 - Controls transition settings
 
 **What you write:**
+
 ```javascript
 presets: {
     HERO: {
@@ -93,31 +103,36 @@ presets: {
 ```
 
 **What you don't touch:**
+
 - Preset application logic
 - Scroll weight calculations
 
 ---
 
 ### 4. Adapter (`adaptor.js`)
+
 **What it does:**
+
 - Defines your custom uniforms
 - Accumulates values during scroll
 - Smooths transitions
 - Updates Three.js material
 
 **What you configure:**
+
 ```javascript
 const UNIFORMS = {
-    density: {
-        uniform: 'u_density',
-        default: 10.0,
-        dataAttr: 'data-density',
-        validator: (v) => Math.max(1, Math.min(50, v))
-    }
+  density: {
+    uniform: "u_density",
+    default: 10.0,
+    dataAttr: "data-density",
+    validator: (v) => Math.max(1, Math.min(50, v)),
+  },
 };
 ```
 
 **What you don't touch:**
+
 - Accumulation algorithm
 - Scroll weight logic
 - Smoothing implementation
@@ -132,7 +147,7 @@ const UNIFORMS = {
 1. Load Config
    └─> Define modes and presets
 
-2. Create Adapter  
+2. Create Adapter
    └─> Define custom uniforms
    └─> Extend engine uniforms
 
@@ -260,6 +275,7 @@ Section Enters View
 ```
 
 **Priority:**
+
 1. HTML data attribute (highest)
 2. Preset value
 3. Default value (lowest)
@@ -273,7 +289,7 @@ Scroll Position:
 ├─ Section A (90% visible) ─ preset: HERO
 │  density: 10, speed: 2.0
 │
-├─ Section B (10% visible) ─ preset: AMBIENT  
+├─ Section B (10% visible) ─ preset: AMBIENT
 │  density: 15, speed: 1.0
 └─ (rest offscreen)
 
@@ -300,22 +316,30 @@ Result: Smooth transition as sections blend
                 ↓
 ┌────────────────────────────────┐
 │ Config.modes                   │
-│ { 'flowing': 0.0 }            │
+│ { 'flowing': 0, 'ripple': 1 } │
 └────────┬───────────────────────┘
          │
          ▼
-┌─────────────────────────────┐
-│ Engine: u_mode = 0.0        │
-└────────┬────────────────────┘
+┌──────────────────────────────────────┐
+│ Engine: Smart mode blending          │
+│ u_mode = 0.5 (lerps smoothly)       │
+│ u_modeWeight0 = 0.6 (instant)       │
+│ u_modeWeight1 = 0.4 (instant)       │
+└────────┬─────────────────────────────┘
          │
          ▼
-┌──────────────────────────────┐
-│ Shader:                      │
-│ if (u_mode < 0.5) {         │
-│   // Flowing style          │
-│ }                            │
-└──────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Shader:                              │
+│ vec3 flowingColor = ...;            │
+│ vec3 rippleColor = ...;             │
+│ vec3 final = flowingColor *         │
+│              u_modeWeight0 +        │
+│              rippleColor *          │
+│              u_modeWeight1;         │
+└──────────────────────────────────────┘
 ```
+
+**Note:** Use mode weights for blending, not `u_mode` ranges. Mode weights represent actual viewport presence, while `u_mode` lerps smoothly through intermediate values.
 
 ---
 
@@ -324,6 +348,7 @@ Result: Smooth transition as sections blend
 Where you can hook in:
 
 ### ✅ You Control
+
 1. **Shader visual logic** - Complete freedom
 2. **Custom uniform definitions** - Any uniforms you need
 3. **Preset values** - What each preset does
@@ -331,6 +356,7 @@ Where you can hook in:
 5. **Data attributes** - Which HTML attrs to read
 
 ### ❌ Engine Controls
+
 1. **Scroll detection** - Automatic
 2. **Section weighting** - Smooth blending algorithm
 3. **Transition timing** - Configurable but engine-managed
@@ -400,17 +426,20 @@ Browser DevTools:
 ## Summary
 
 **You write:**
+
 - GLSL shader code (visual effect)
 - Uniform definitions (what's controllable)
 - Preset values (how presets behave)
 
 **Engine provides:**
+
 - Scroll-based blending
 - Smooth transitions
 - Uniform management
 - Rendering lifecycle
 
 **Result:**
+
 - Minimal boilerplate
 - Maximum creative control
 - AI-friendly structure

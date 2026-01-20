@@ -1,6 +1,6 @@
 {
     "name": "@cael-prussian/morphbg",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "WebGL shader backgrounds for web projects - scroll-responsive and highly customizable",
     "main": "dist/morphbg-engine.bundle.js",
     "files": [

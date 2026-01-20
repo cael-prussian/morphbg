@@ -84,6 +84,11 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
             u_resolution: { value: new THREE.Vector2() },
             u_mouse: { value: mouse.clone() },
             u_mode: { value: 0 },
+            
+            // Mode weights from engine (which modes are actually visible)
+            u_modeWeight0: { value: 1.0 },
+            u_modeWeight1: { value: 0.0 },
+            u_modeWeight2: { value: 0.0 },
 
             u_spatialMotion: { value: basePreset.spatial },
             u_temporalMotion: { value: basePreset.temporal },
@@ -268,6 +273,9 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         let strongestW = 0;
         let strongestPreset = lastPreset;
         let strongestMode = lastMode;
+        
+        // Track top 2 modes for proper blending (avoid averaging 0+2=1)
+        let modes = []; // [{mode: 'modeName', value: 0.0, weight: 0.0}, ...]
 
         const acc = {
             spatial: 0, temporal: 0, cursor: 0, calm: 0,
@@ -322,6 +330,15 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
 
             totalW += w;
             modeSum += modeNameToValue(modeName) * w;
+            
+            // Track this mode for smart blending
+            const modeValue = modeNameToValue(modeName);
+            const existing = modes.find(m => m.value === modeValue);
+            if (existing) {
+                existing.weight += w;
+            } else {
+                modes.push({ mode: modeName, value: modeValue, weight: w });
+            }
 
             acc.spatial += preset.spatial * w;
             acc.temporal += preset.temporal * w;
@@ -334,6 +351,56 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
             }
         }
 
+        // Smart mode blending: only blend between top 2 modes to avoid 0+2=1 averaging
+        modes.sort((a, b) => b.weight - a.weight);
+        
+        // Initialize mode weights to pass to shader
+        const modeWeights = [0, 0, 0];
+        
+        if (modes.length >= 2) {
+            const top1 = modes[0];
+            const top2 = modes[1];
+            const blendW = top1.weight + top2.weight;
+            if (blendW > 0.001) {
+                // Only blend between these two modes
+                targetMode = (top1.value * top1.weight + top2.value * top2.weight) / blendW;
+                
+                // Pass normalized weights to shader (convert mode values to int indices)
+                const idx1 = Math.round(top1.value);
+                const idx2 = Math.round(top2.value);
+                modeWeights[idx1] = top1.weight / blendW;
+                modeWeights[idx2] = top2.weight / blendW;
+                
+                if (DEBUG) {
+                    console.log(`[morphbg] Smart blend: ${top1.mode}(${top1.value}) w=${top1.weight.toFixed(2)} + ${top2.mode}(${top2.value}) w=${top2.weight.toFixed(2)} = targetMode=${targetMode.toFixed(2)}`);
+                    console.log(`[morphbg] Mode weights: [${modeWeights.map(w => w.toFixed(2)).join(', ')}]`);
+                }
+            } else {
+                targetMode = modeSum / totalW;
+                if (DEBUG) {
+                    console.log(`[morphbg] Fallback blend: modeSum=${modeSum.toFixed(2)} / totalW=${totalW.toFixed(2)} = ${targetMode.toFixed(2)}`);
+                }
+            }
+        } else if (modes.length === 1) {
+            targetMode = modes[0].value;
+            const idx = Math.round(modes[0].value);
+            modeWeights[idx] = 1.0;
+            if (DEBUG) {
+                console.log(`[morphbg] Single mode: ${modes[0].mode}(${modes[0].value})`);
+                console.log(`[morphbg] Mode weights: [${modeWeights.map(w => w.toFixed(2)).join(', ')}]`);
+            }
+        } else {
+            targetMode = modeSum / totalW;
+            if (DEBUG) {
+                console.log(`[morphbg] No modes: using modeSum=${modeSum.toFixed(2)} / totalW=${totalW.toFixed(2)} = ${targetMode.toFixed(2)}`);
+            }
+        }
+        
+        // Update mode weight uniforms (these don't lerp, they're instant)
+        material.uniforms.u_modeWeight0.value = modeWeights[0];
+        material.uniforms.u_modeWeight1.value = modeWeights[1];
+        material.uniforms.u_modeWeight2.value = modeWeights[2];
+        
         if (strongestW > 0.001) {
             lastPreset = strongestPreset;
             lastMode = strongestMode;
@@ -357,8 +424,6 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
                 ADAPTER.accumulateBaseline({ need, acc: accExtra, material, clamp01 });
             }
         }
-
-        targetMode = modeSum / totalW;
 
         // Base target values from universal presets
         let nextTarget = {
@@ -413,8 +478,12 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         animationId = requestAnimationFrame(animate);
 
         const now = performance.now() * 0.001;
-        const dt = now - lastTime;
+        let dt = now - lastTime;
         lastTime = now;
+
+        // Clamp dt to avoid large jumps after tab inactivity or long idle
+        const MAX_DT = 0.12; // ~8 FPS, prevents sudden lerp jumps
+        if (dt > MAX_DT) dt = MAX_DT;
 
         // --- FPS cap ---
         const fps = desiredFps();
@@ -499,7 +568,6 @@ window.initBGShaderSystem = function initBGShaderSystem(opts) {
         }
     };
 };
-
 
 /**
  * ScrollShaderManager - Scroll-based shader switching (single canvas)
@@ -831,6 +899,7 @@ window.BG_SHADER_CONFIG = {
     },
 
     presets: {
+
         HERO: {
             spatial: 1.0,
             temporal: 1.0,
@@ -844,8 +913,8 @@ window.BG_SHADER_CONFIG = {
         READ: {
             spatial: 0.05,
             temporal: 0.03,
-            cursor: 0.0,
-            cursorGlobal: 1.0,
+            cursor: 1.0,
+            cursorGlobal: 0.0,
             flatten: 0.85,
             heightContrast: 0.25,
             calm: 0.75
@@ -854,7 +923,7 @@ window.BG_SHADER_CONFIG = {
         AMBIENT: {
             spatial: 0.25,
             temporal: 0.20,
-            cursor: 0.0,
+            cursor: 1.0,
             cursorGlobal: 0.0,
             flatten: 0.35,
             heightContrast: 0.6,
@@ -874,6 +943,11 @@ uniform float u_time;
 uniform vec2  u_resolution;
 uniform vec2  u_mouse;
 uniform float u_mode;
+
+// Mode weights from engine (which modes are actually in viewport)
+uniform float u_modeWeight0;
+uniform float u_modeWeight1;
+uniform float u_modeWeight2;
 
 uniform float u_spatialMotion;
 uniform float u_temporalMotion;
@@ -1168,8 +1242,19 @@ void main() {
   vec2 uvN = v_uv;
   vec2 uvA = vec2(uvN.x * aspect, uvN.y);
 
-  float topoPresence = 1.0 - smoothstep(0.0, 1.0, abs(u_mode - 1.0) / 0.85);
-  float fabricT = smoothstep(1.50, 2.00, u_mode);
+  // Use mode weights directly from engine - they already know which modes are in viewport
+  // No need for complex u_mode range detection - the engine tells us explicitly
+  float mode0T = u_modeWeight0;
+  float mode1T = u_modeWeight1;
+  float mode2T = u_modeWeight2;
+  
+  // Ensure weights sum to 1.0 (should already be normalized, but safeguard)
+  float totalWeight = mode0T + mode1T + mode2T;
+  if (totalWeight > 0.001) {
+    mode0T /= totalWeight;
+    mode1T /= totalWeight;
+    mode2T /= totalWeight;
+  }
 
   float fMask = focusMask(uvN);
   float calmFactor = clamp(u_calm + fMask * u_focusStrength, 0.0, 1.0);
@@ -1183,7 +1268,22 @@ void main() {
   float cursorLocalK  = cursorOn * (1.0 - fMask) * (1.0 - u_cursorGlobal);
   float cursorGlobalK = cursorOn * u_cursorGlobal;
 
-  float t = u_time * mix(0.04, 0.22, temporalK);
+  // Make time periodic to prevent accumulation and ensure consistent movement intensity
+  float TIME_PERIOD = 1000.0; // seconds, adjust as needed for visual cycle
+  float tRaw = mod(u_time, TIME_PERIOD) * mix(0.04, 0.22, temporalK);
+  // Clamp t to max corresponding to ~10 seconds of motion
+  float T_CLAMP = 20.0 * 0.22; // 20 seconds at max temporalK
+  float t = min(tRaw, T_CLAMP);
+
+  // Debug: log t and amplitude if window.DEBUG_MORPHBG is set
+#ifdef GL_ES
+#else
+  if (window.DEBUG_MORPHBG) {
+    // This will only work in environments supporting JS in GLSL (e.g. via engine debug hooks)
+    // For real GLSL, use engine-side logging if needed
+    // console.log('GS1 t:', t, 'tRaw:', tRaw, 'T_CLAMP:', T_CLAMP);
+  }
+#endif
 
   // Apply warpIntensity to spatial warp calculations
   float warpBase = clamp(u_warpIntensity, 0.0, 1.0);
@@ -1202,6 +1302,12 @@ void main() {
     vec2 c0 = vec2(0.5 * aspect, 0.5);
     float shiftAmt = mix(0.08, 0.012, readK);
     vec2 shift = (cursorA - c0) * shiftAmt * cursorGlobalK;
+    // Clamp the shift length to avoid excessive movement during scroll transitions
+    float maxShift = 0.12; // maximum allowed shift (tunable)
+    float shiftLen = length(shift);
+    if (shiftLen > maxShift) {
+      shift = normalize(shift) * maxShift;
+    }
     warpedA += shift;
   }
 
@@ -1229,42 +1335,32 @@ void main() {
 
   vec3 atmOnlyCol = col;
 
-  // TOPOGRAPHIC (Mode 1: topographic-flow)
-  {
-    float bandsUse = mix(F.bands, mix(4.0, 9.0, F.detail), readK);
-    // Apply u_topoBands to override automatic band calculation
-    bandsUse = mix(bandsUse, u_topoBands, step(2.0, u_topoBands));
-    float xUse = clamp(hUse, 0.0, 1.0) * bandsUse;
+  // Mode 0: Atmospheric mesh (gradient-based)
+  vec3 mode0Col = palette5(h + phase);
 
-    float parity = fract(xUse * 0.5);
-    // Apply u_topoWhiteBias to control white region expansion
-    float whiteBias = mix(0.0, 0.05, readK) + u_topoWhiteBias;
-    float regionParity = step(0.5 - whiteBias, parity);
-
-    vec3 topoCol = mix(vec3(1.0), vec3(0.0), regionParity);
-
-    vec3 blended = mix(atmOnlyCol, topoCol, topoPresence);
-
-    if (readK > 0.001) {
-      float isWhite = 1.0 - regionParity;
-      float isBlack = regionParity;
-      blended = mix(blended, vec3(1.0), isWhite * readK);
-      blended = mix(blended, atmOnlyCol, isBlack * readK);
-    }
-
-    col = blended;
+  // Mode 1: Topographic flow (contour lines)
+  float bandsUse = mix(F.bands, mix(4.0, 9.0, F.detail), readK);
+  bandsUse = mix(bandsUse, u_topoBands, step(2.0, u_topoBands));
+  float xUse = clamp(hUse, 0.0, 1.0) * bandsUse;
+  float parity = fract(xUse * 0.5);
+  float whiteBias = mix(0.0, 0.05, readK) + u_topoWhiteBias;
+  float regionParity = step(0.5 - whiteBias, parity);
+  vec3 topoCol = mix(vec3(1.0), vec3(0.0), regionParity);
+  vec3 mode1Col = mix(atmOnlyCol, topoCol, 1.0);
+  if (readK > 0.001) {
+    float isWhite = 1.0 - regionParity;
+    float isBlack = regionParity;
+    mode1Col = mix(mode1Col, vec3(1.0), isWhite * readK);
+    mode1Col = mix(mode1Col, atmOnlyCol, isBlack * readK);
   }
-
-  // MODE 3 (fabric-warp slot): organic textured atmospheric + wobble
-  if (fabricT > 0.0001) {
-    vec3 organicCol = organicTextureColor(F.p, uvA, cursorA, t, hUse, phase, spatialK, temporalK, calmFactor, readK);
-    col = mix(atmOnlyCol, organicCol, fabricT);
-  }
-
-  // Grain removed per user preference (no performance impact)
   
-  // (1) Dither: break gradient banding without temporal artifacts
-  // Static per-frame using floor() to prevent flickering vertical lines
+  // Mode 2: Fabric warp (organic texture)
+  vec3 mode2Col = organicTextureColor(warpedA, uvA, cursorA, t, hUse, phase, spatialK, temporalK, calmFactor, readK);
+  
+  // Blend modes using weights from engine
+  col = mode0Col * mode0T + mode1Col * mode1T + mode2Col * mode2T;
+
+  // Dither: break gradient banding without temporal artifacts
   float d = dither01(gl_FragCoord.xy + vec2(19.7, 73.3) + floor(u_time * 3.0));
   col += d * (1.0 / 255.0) * 0.85;
 
@@ -1334,7 +1430,6 @@ window.BG_TopoReadAdapter = (() => {
                 let value;
 
                 if (def.useMaterialFallback) {
-                    // Preset-driven: fallback to current material value
                     value = parseFloat(el.getAttribute(def.dataAttr)) || material.uniforms[def.uniform]?.value || def.default;
                 } else {
                     value = parseFloat(el.getAttribute(def.dataAttr)) || def.default;
@@ -1346,6 +1441,11 @@ window.BG_TopoReadAdapter = (() => {
                     value = clamp01(value);
                 }
 
+                if (window.DEBUG_MORPHBG) {
+                    const preset = el.getAttribute('data-shader-preset') || 'unknown';
+                    const mode = el.getAttribute('data-shader-mode') || 'unknown';
+                    console.log(`[adaptor] accumulateFromSection: preset=${preset}, mode=${mode}, key=${key}, value=${value}, w=${w}, acc=${acc[key]}`);
+                }
                 acc[key] += value * w;
             }
         },
@@ -1362,6 +1462,9 @@ window.BG_TopoReadAdapter = (() => {
 
             for (const [key] of accumulatedUniforms) {
                 next[key] = acc[key] * invW;
+                if (window.DEBUG_MORPHBG) {
+                    console.log(`[adaptor] finalizeTargets: key=${key}, acc=${acc[key]}, totalW=${totalW}, next=${next[key]}`);
+                }
             }
 
             return { target: next };
@@ -1403,6 +1506,10 @@ uniform vec2  u_resolution;
 uniform vec2  u_mouse;
 uniform float u_time;
 uniform float u_mode;
+
+uniform float u_modeWeight0;
+uniform float u_modeWeight1;
+uniform float u_modeWeight2;
 
 uniform float u_heroAlwaysOnK;
 uniform float u_spatialMotion;
@@ -2837,10 +2944,10 @@ void main() {
   vec2 uvN = v_uv;
   vec3 col;
 
-  // Compute blend weights for smooth transitions
-  float m0 = 1.0 - smoothstep(0.35, 0.90, abs(u_mode - 0.0));
-  float m1 = 1.0 - smoothstep(0.35, 0.90, abs(u_mode - 1.0));
-  float m2 = 1.0 - smoothstep(0.35, 0.90, abs(u_mode - 2.0));
+  // Use mode weights provided by the engine
+  float m0 = u_modeWeight0;
+  float m1 = u_modeWeight1;
+  float m2 = u_modeWeight2;
 
   // Branch: execute only modes with non-zero weight
   // This preserves smooth transitions while avoiding redundant computation
@@ -3098,6 +3205,11 @@ uniform vec2  u_resolution;
 uniform vec2  u_mouse;
 uniform float u_time;
 uniform float u_mode;
+
+// Mode weights from engine (which modes are actually in viewport)
+uniform float u_modeWeight0;
+uniform float u_modeWeight1;
+uniform float u_modeWeight2;
 
 uniform float u_spatialMotion;
 uniform float u_temporalMotion;
@@ -3666,16 +3778,17 @@ void kusamaDotSample(
   float wobbleK = mix(1.0, cursorK, clamp(useCursorWobble, 0.0, 1.0));
   float kW = clamp(kWBase, 0.0, 1.0) * wobbleK;
 
-float t01    = clamp(u_mode, 0.0, 1.0);
-float mode0K = 1.0 - t01;
-
-// MODE 2 DETECTION: Use per-lane wobble for octopus tentacles
+// Mode-specific wobble behavior
 float wG;
-if (u_mode > 1.5) {
-  // Mode 2: Per-lane unique curves
+if (u_modeWeight2 > 0.5) {
+  // Mode 2: Per-lane unique curves (octopus tentacles)
   wG = laneWobblePx_Mode2(dotCy, colID, u_kCurveAmp, u_kCurveVariety, u_time) * wobbleScale;
 } else {
-  // Mode 0/1: Synchronized wobble
+  // Mode 0/1: Synchronized wobble, blend based on mode weights
+  float t01 = (u_modeWeight0 + u_modeWeight1 > 0.001) 
+    ? u_modeWeight1 / (u_modeWeight0 + u_modeWeight1) 
+    : 0.0;
+  float mode0K = 1.0 - t01;
   wG = laneWobblePx_M0Boost(dotCy, kW, u_time, mode0K) * wobbleScale;
 }
 
@@ -4004,7 +4117,16 @@ float readOpacityPow = 0.85; // (was 1.35)
 vec3 modeKusamaUnified01(vec2 uv) {
   vec3 col = brandHueCycle(u_time);
 
-  float t01 = clamp(u_mode, 0.0, 1.0); // 0 = mode0, 1 = mode1
+  // Blend between mode 0 and mode 1 based on their relative weights
+  // When mode 2 is active, use mode 1 behavior (t01=1.0)
+  float t01;
+  if (u_modeWeight2 > 0.5) {
+    t01 = 1.0;  // Mode 2 uses mode 1's zoom/wobble settings
+  } else if (u_modeWeight0 + u_modeWeight1 > 0.001) {
+    t01 = u_modeWeight1 / (u_modeWeight0 + u_modeWeight1);
+  } else {
+    t01 = 0.0;
+  }
 
   // --- pattern-space zoom ---
   // zoomIn=4 means: sample 1/4 the area -> looks 4x larger on screen
@@ -4126,8 +4248,8 @@ vec3 modeKusamaUnified01(vec2 uv) {
   float padPxCommon = padBase * scaleG;
   float regionCenter = lanePxBase + 2.0 * padPxCommon;
 
-  // Mode 2: Render with z-index ordering (larger dots on top)
-  bool isMode2 = (u_mode > 1.5);
+  // Mode 2 uses z-index ordering (larger dots on top)
+  bool isMode2 = (u_modeWeight2 > 0.5);
 
   const int MAX_ITERS = 32;  // Reduced from 64 for performance (revert if needed)
 

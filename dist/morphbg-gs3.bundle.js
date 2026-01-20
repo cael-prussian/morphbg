@@ -32,6 +32,11 @@ uniform vec2  u_mouse;
 uniform float u_time;
 uniform float u_mode;
 
+// Mode weights from engine (which modes are actually in viewport)
+uniform float u_modeWeight0;
+uniform float u_modeWeight1;
+uniform float u_modeWeight2;
+
 uniform float u_spatialMotion;
 uniform float u_temporalMotion;
 uniform float u_cursorEnabled;
@@ -599,16 +604,17 @@ void kusamaDotSample(
   float wobbleK = mix(1.0, cursorK, clamp(useCursorWobble, 0.0, 1.0));
   float kW = clamp(kWBase, 0.0, 1.0) * wobbleK;
 
-float t01    = clamp(u_mode, 0.0, 1.0);
-float mode0K = 1.0 - t01;
-
-// MODE 2 DETECTION: Use per-lane wobble for octopus tentacles
+// Mode-specific wobble behavior
 float wG;
-if (u_mode > 1.5) {
-  // Mode 2: Per-lane unique curves
+if (u_modeWeight2 > 0.5) {
+  // Mode 2: Per-lane unique curves (octopus tentacles)
   wG = laneWobblePx_Mode2(dotCy, colID, u_kCurveAmp, u_kCurveVariety, u_time) * wobbleScale;
 } else {
-  // Mode 0/1: Synchronized wobble
+  // Mode 0/1: Synchronized wobble, blend based on mode weights
+  float t01 = (u_modeWeight0 + u_modeWeight1 > 0.001) 
+    ? u_modeWeight1 / (u_modeWeight0 + u_modeWeight1) 
+    : 0.0;
+  float mode0K = 1.0 - t01;
   wG = laneWobblePx_M0Boost(dotCy, kW, u_time, mode0K) * wobbleScale;
 }
 
@@ -937,7 +943,16 @@ float readOpacityPow = 0.85; // (was 1.35)
 vec3 modeKusamaUnified01(vec2 uv) {
   vec3 col = brandHueCycle(u_time);
 
-  float t01 = clamp(u_mode, 0.0, 1.0); // 0 = mode0, 1 = mode1
+  // Blend between mode 0 and mode 1 based on their relative weights
+  // When mode 2 is active, use mode 1 behavior (t01=1.0)
+  float t01;
+  if (u_modeWeight2 > 0.5) {
+    t01 = 1.0;  // Mode 2 uses mode 1's zoom/wobble settings
+  } else if (u_modeWeight0 + u_modeWeight1 > 0.001) {
+    t01 = u_modeWeight1 / (u_modeWeight0 + u_modeWeight1);
+  } else {
+    t01 = 0.0;
+  }
 
   // --- pattern-space zoom ---
   // zoomIn=4 means: sample 1/4 the area -> looks 4x larger on screen
@@ -1059,8 +1074,8 @@ vec3 modeKusamaUnified01(vec2 uv) {
   float padPxCommon = padBase * scaleG;
   float regionCenter = lanePxBase + 2.0 * padPxCommon;
 
-  // Mode 2: Render with z-index ordering (larger dots on top)
-  bool isMode2 = (u_mode > 1.5);
+  // Mode 2 uses z-index ordering (larger dots on top)
+  bool isMode2 = (u_modeWeight2 > 0.5);
 
   const int MAX_ITERS = 32;  // Reduced from 64 for performance (revert if needed)
 

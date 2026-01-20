@@ -6,6 +6,7 @@ window.BG_SHADER_CONFIG = {
     },
 
     presets: {
+
         HERO: {
             spatial: 1.0,
             temporal: 1.0,
@@ -19,8 +20,8 @@ window.BG_SHADER_CONFIG = {
         READ: {
             spatial: 0.05,
             temporal: 0.03,
-            cursor: 0.0,
-            cursorGlobal: 1.0,
+            cursor: 1.0,
+            cursorGlobal: 0.0,
             flatten: 0.85,
             heightContrast: 0.25,
             calm: 0.75
@@ -29,7 +30,7 @@ window.BG_SHADER_CONFIG = {
         AMBIENT: {
             spatial: 0.25,
             temporal: 0.20,
-            cursor: 0.0,
+            cursor: 1.0,
             cursorGlobal: 0.0,
             flatten: 0.35,
             heightContrast: 0.6,

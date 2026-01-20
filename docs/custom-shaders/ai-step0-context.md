@@ -9,16 +9,19 @@
 **DO NOT attempt to generate complex visual shaders from scratch.**
 
 Visual effects are best created by:
+
 1. **Finding existing examples** (ShaderToy, GLSL Sandbox, etc.)
 2. **Adapting them** to morphbg conventions
 3. **Iterating** based on visual feedback
 
 Writing shaders from scratch leads to:
+
 - ❌ Weak visual quality (generic math → generic look)
 - ❌ Technical errors (incorrect formulas, edge cases)
 - ❌ Multiple iterations to get "right feel"
 
 Using reference shaders provides:
+
 - ✅ Proven visual quality
 - ✅ Correct math and optimizations
 - ✅ Faster path to desired appearance
@@ -49,7 +52,10 @@ The engine automatically provides these to ALL shaders:
 uniform float u_time;           // Elapsed seconds
 uniform vec2 u_resolution;      // Canvas size (width, height)
 uniform vec2 u_mouse;           // Mouse position (0-1, 0-1)
-uniform float u_mode;           // Current mode value
+uniform float u_mode;           // Current mode value (lerps smoothly)
+uniform float u_modeWeight0;    // Mode 0 viewport weight (instant)
+uniform float u_modeWeight1;    // Mode 1 viewport weight (instant)
+uniform float u_modeWeight2;    // Mode 2 viewport weight (instant)
 
 // Motion controls (blended by scroll)
 uniform float u_spatialMotion;  // 0-1: spatial complexity
@@ -61,12 +67,14 @@ uniform float u_calm;           // 0-1: effect simplification
 ### 2. Scroll-Based Preset Blending
 
 Users assign presets to HTML sections:
+
 ```html
 <section data-shader-preset="HERO">...</section>
 <section data-shader-preset="READ">...</section>
 ```
 
 Engine:
+
 - Detects which sections are visible during scroll
 - Calculates weight for each section (based on viewport overlap)
 - Blends preset values smoothly using these weights
@@ -75,14 +83,17 @@ Engine:
 ### 3. Preset Philosophy
 
 **HERO** - Maximum drama
+
 - `spatial: 1.0, temporal: 1.0, cursor: 1.0, calm: 0.0`
 - Custom uniforms: high intensity values
 
 **AMBIENT** - Balanced
+
 - `spatial: 0.3-0.6, temporal: 0.3-0.6, cursor: 0.3, calm: 0.3`
 - Custom uniforms: medium values
 
 **READ** - Minimal, text-friendly
+
 - `spatial: <0.1, temporal: <0.1, cursor: 0.0, calm: >0.7`
 - Custom uniforms: low intensity values
 
@@ -130,6 +141,7 @@ applyFromPreset({...})          // Apply preset directly
 ### 6. Shader Requirements
 
 Shaders MUST:
+
 - Use `u_temporalMotion` to scale all time-based animations
 - Use `u_spatialMotion` to scale spatial complexity/variation
 - Gate cursor effects with `u_cursorEnabled` (multiply or if-check)
@@ -152,29 +164,35 @@ Shaders MUST:
 After reviewing engine and example shader:
 
 ✅ **How engine provides universal uniforms**
+
 - Where they're defined in engine.js
 - How they're updated each frame
 
 ✅ **How scroll detection works**
+
 - Section weight calculation
 - Transition zones (transitionVh)
 
 ✅ **How preset blending works**
+
 - Accumulation by weight
 - Smooth transitions (smoothSpeed)
 
 ✅ **How adapters manage custom uniforms**
+
 - UNIFORMS object structure
 - Accumulation pattern
 - Validation
 
 ✅ **How shaders use motion controls**
+
 - Scaling animation with u_temporalMotion
 - Scaling complexity with u_spatialMotion
 - Gating cursor with u_cursorEnabled
 - Applying calm effect
 
 ✅ **Patterns in existing shaders**
+
 - Noise functions
 - Helper functions
 - Common GLSL techniques
@@ -187,6 +205,7 @@ After reviewing engine and example shader:
 When reviewing `src/shaders/gs1/`:
 
 **shader.js observations:**
+
 - Uses `u_time * u_temporalMotion` for animation scaling
 - Uses `u_spatialMotion` to scale noise influence
 - Cursor effects gated by `u_cursorEnabled`
@@ -195,12 +214,14 @@ When reviewing `src/shaders/gs1/`:
 - Performance conscious (no expensive operations in main loop)
 
 **config.js observations:**
+
 - Three distinct presets with clear intensity differences
 - HERO: full motion values, dramatic custom uniform values
 - READ: minimal motion, calmed custom uniform values
 - transitionVh and smoothSpeed control blending behavior
 
 **adaptor.js observations:**
+
 - All custom uniforms listed in UNIFORMS object
 - Validators ensure reasonable ranges
 - Uses `accumulate !== false` pattern for scroll blending

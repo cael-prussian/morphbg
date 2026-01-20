@@ -33,6 +33,7 @@ Initializes a shader instance on a canvas element.
 ```
 
 **Returns:** Instance object with methods:
+
 - `renderer` - Three.js WebGLRenderer
 - `scene` - Three.js Scene
 - `camera` - Three.js Camera
@@ -45,10 +46,10 @@ Initializes a shader instance on a canvas element.
 
 ```javascript
 const instance = window.initBGShaderSystem({
-  canvasId: 'bg-canvas',
+  canvasId: "bg-canvas",
   fragmentShader: window.BG_FRAGMENT_SHADER,
   config: window.BG_SHADER_CONFIG,
-  adapter: window.BG_TopoReadAdapter
+  adapter: window.BG_TopoReadAdapter,
 });
 ```
 
@@ -71,6 +72,7 @@ window.ScrollShaderManager.init();
 Manually switch to a specific shader.
 
 **Parameters:**
+
 - `shaderId` - Shader ID ('gs1', 'gs2', or 'gs3')
 
 **Returns:** `boolean` - Success status
@@ -78,7 +80,7 @@ Manually switch to a specific shader.
 **Example:**
 
 ```javascript
-window.ScrollShaderManager.switchTo('gs2');
+window.ScrollShaderManager.switchTo("gs2");
 ```
 
 ### `ScrollShaderManager.getCurrentShader()`
@@ -176,6 +178,7 @@ Specifies which shader to use for a section.
 Specifies the preset to use for a section.
 
 **Values:** Depends on shader
+
 - GS1: `'HERO'`, `'AMBIENT'`, `'CALM'`
 - GS2: `'HERO'`, `'AMBIENT'`, `'CALM'`, `'ENERGETIC'`
 - GS3: `'HERO'`, `'AMBIENT'`, `'CALM'`
@@ -192,19 +195,31 @@ Specifies the preset to use for a section.
 
 Enable debug mode to see performance metrics and configuration:
 
+### GS1 Adaptor Debug Logging
+
+For deeper debugging of the GS1 shader adaptor (TopoReadAdapter)—such as logging uniform accumulation and blending—set the following global variable in your browser console before initializing the shader:
+
+```javascript
+window.DEBUG_MORPHBG = true;
+```
+
+This enables detailed logging in GS1's TopoReadAdapter. Useful for troubleshooting section blending, preset transitions, and uniform values. Other adaptors may not support this flag unless implemented.
+
 ```javascript
 const instance = window.initBGShaderSystem({
   // ... other options
-  debug: true
+  debug: true,
 });
 ```
 
 Debug mode displays:
+
 - FPS counter
 - Current mode values
 - Scroll position
 - Target values
 - Uniform values
+- (If `window.DEBUG_MORPHBG` is set) Adaptor-level debug logs for uniform accumulation and blending
 
 ## Global Variables
 
@@ -236,12 +251,14 @@ The system uses standard DOM events:
 ## Browser Support
 
 Requires:
+
 - WebGL support
 - ES6 (arrow functions, const/let)
 - requestAnimationFrame
 - CSS transitions
 
 Tested on:
+
 - Chrome 90+
 - Firefox 88+
 - Safari 14+

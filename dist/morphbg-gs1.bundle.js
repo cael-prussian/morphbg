@@ -12,6 +12,7 @@ window.BG_SHADER_CONFIG = {
     },
 
     presets: {
+
         HERO: {
             spatial: 1.0,
             temporal: 1.0,
@@ -25,8 +26,8 @@ window.BG_SHADER_CONFIG = {
         READ: {
             spatial: 0.05,
             temporal: 0.03,
-            cursor: 0.0,
-            cursorGlobal: 1.0,
+            cursor: 1.0,
+            cursorGlobal: 0.0,
             flatten: 0.85,
             heightContrast: 0.25,
             calm: 0.75
@@ -35,7 +36,7 @@ window.BG_SHADER_CONFIG = {
         AMBIENT: {
             spatial: 0.25,
             temporal: 0.20,
-            cursor: 0.0,
+            cursor: 1.0,
             cursorGlobal: 0.0,
             flatten: 0.35,
             heightContrast: 0.6,
@@ -55,6 +56,11 @@ uniform float u_time;
 uniform vec2  u_resolution;
 uniform vec2  u_mouse;
 uniform float u_mode;
+
+// Mode weights from engine (which modes are actually in viewport)
+uniform float u_modeWeight0;
+uniform float u_modeWeight1;
+uniform float u_modeWeight2;
 
 uniform float u_spatialMotion;
 uniform float u_temporalMotion;
@@ -349,8 +355,19 @@ void main() {
   vec2 uvN = v_uv;
   vec2 uvA = vec2(uvN.x * aspect, uvN.y);
 
-  float topoPresence = 1.0 - smoothstep(0.0, 1.0, abs(u_mode - 1.0) / 0.85);
-  float fabricT = smoothstep(1.50, 2.00, u_mode);
+  // Use mode weights directly from engine - they already know which modes are in viewport
+  // No need for complex u_mode range detection - the engine tells us explicitly
+  float mode0T = u_modeWeight0;
+  float mode1T = u_modeWeight1;
+  float mode2T = u_modeWeight2;
+  
+  // Ensure weights sum to 1.0 (should already be normalized, but safeguard)
+  float totalWeight = mode0T + mode1T + mode2T;
+  if (totalWeight > 0.001) {
+    mode0T /= totalWeight;
+    mode1T /= totalWeight;
+    mode2T /= totalWeight;
+  }
 
   float fMask = focusMask(uvN);
   float calmFactor = clamp(u_calm + fMask * u_focusStrength, 0.0, 1.0);
@@ -364,7 +381,22 @@ void main() {
   float cursorLocalK  = cursorOn * (1.0 - fMask) * (1.0 - u_cursorGlobal);
   float cursorGlobalK = cursorOn * u_cursorGlobal;
 
-  float t = u_time * mix(0.04, 0.22, temporalK);
+  // Make time periodic to prevent accumulation and ensure consistent movement intensity
+  float TIME_PERIOD = 1000.0; // seconds, adjust as needed for visual cycle
+  float tRaw = mod(u_time, TIME_PERIOD) * mix(0.04, 0.22, temporalK);
+  // Clamp t to max corresponding to ~10 seconds of motion
+  float T_CLAMP = 20.0 * 0.22; // 20 seconds at max temporalK
+  float t = min(tRaw, T_CLAMP);
+
+  // Debug: log t and amplitude if window.DEBUG_MORPHBG is set
+#ifdef GL_ES
+#else
+  if (window.DEBUG_MORPHBG) {
+    // This will only work in environments supporting JS in GLSL (e.g. via engine debug hooks)
+    // For real GLSL, use engine-side logging if needed
+    // console.log('GS1 t:', t, 'tRaw:', tRaw, 'T_CLAMP:', T_CLAMP);
+  }
+#endif
 
   // Apply warpIntensity to spatial warp calculations
   float warpBase = clamp(u_warpIntensity, 0.0, 1.0);
@@ -383,6 +415,12 @@ void main() {
     vec2 c0 = vec2(0.5 * aspect, 0.5);
     float shiftAmt = mix(0.08, 0.012, readK);
     vec2 shift = (cursorA - c0) * shiftAmt * cursorGlobalK;
+    // Clamp the shift length to avoid excessive movement during scroll transitions
+    float maxShift = 0.12; // maximum allowed shift (tunable)
+    float shiftLen = length(shift);
+    if (shiftLen > maxShift) {
+      shift = normalize(shift) * maxShift;
+    }
     warpedA += shift;
   }
 
@@ -410,42 +448,32 @@ void main() {
 
   vec3 atmOnlyCol = col;
 
-  // TOPOGRAPHIC (Mode 1: topographic-flow)
-  {
-    float bandsUse = mix(F.bands, mix(4.0, 9.0, F.detail), readK);
-    // Apply u_topoBands to override automatic band calculation
-    bandsUse = mix(bandsUse, u_topoBands, step(2.0, u_topoBands));
-    float xUse = clamp(hUse, 0.0, 1.0) * bandsUse;
+  // Mode 0: Atmospheric mesh (gradient-based)
+  vec3 mode0Col = palette5(h + phase);
 
-    float parity = fract(xUse * 0.5);
-    // Apply u_topoWhiteBias to control white region expansion
-    float whiteBias = mix(0.0, 0.05, readK) + u_topoWhiteBias;
-    float regionParity = step(0.5 - whiteBias, parity);
-
-    vec3 topoCol = mix(vec3(1.0), vec3(0.0), regionParity);
-
-    vec3 blended = mix(atmOnlyCol, topoCol, topoPresence);
-
-    if (readK > 0.001) {
-      float isWhite = 1.0 - regionParity;
-      float isBlack = regionParity;
-      blended = mix(blended, vec3(1.0), isWhite * readK);
-      blended = mix(blended, atmOnlyCol, isBlack * readK);
-    }
-
-    col = blended;
+  // Mode 1: Topographic flow (contour lines)
+  float bandsUse = mix(F.bands, mix(4.0, 9.0, F.detail), readK);
+  bandsUse = mix(bandsUse, u_topoBands, step(2.0, u_topoBands));
+  float xUse = clamp(hUse, 0.0, 1.0) * bandsUse;
+  float parity = fract(xUse * 0.5);
+  float whiteBias = mix(0.0, 0.05, readK) + u_topoWhiteBias;
+  float regionParity = step(0.5 - whiteBias, parity);
+  vec3 topoCol = mix(vec3(1.0), vec3(0.0), regionParity);
+  vec3 mode1Col = mix(atmOnlyCol, topoCol, 1.0);
+  if (readK > 0.001) {
+    float isWhite = 1.0 - regionParity;
+    float isBlack = regionParity;
+    mode1Col = mix(mode1Col, vec3(1.0), isWhite * readK);
+    mode1Col = mix(mode1Col, atmOnlyCol, isBlack * readK);
   }
-
-  // MODE 3 (fabric-warp slot): organic textured atmospheric + wobble
-  if (fabricT > 0.0001) {
-    vec3 organicCol = organicTextureColor(F.p, uvA, cursorA, t, hUse, phase, spatialK, temporalK, calmFactor, readK);
-    col = mix(atmOnlyCol, organicCol, fabricT);
-  }
-
-  // Grain removed per user preference (no performance impact)
   
-  // (1) Dither: break gradient banding without temporal artifacts
-  // Static per-frame using floor() to prevent flickering vertical lines
+  // Mode 2: Fabric warp (organic texture)
+  vec3 mode2Col = organicTextureColor(warpedA, uvA, cursorA, t, hUse, phase, spatialK, temporalK, calmFactor, readK);
+  
+  // Blend modes using weights from engine
+  col = mode0Col * mode0T + mode1Col * mode1T + mode2Col * mode2T;
+
+  // Dither: break gradient banding without temporal artifacts
   float d = dither01(gl_FragCoord.xy + vec2(19.7, 73.3) + floor(u_time * 3.0));
   col += d * (1.0 / 255.0) * 0.85;
 
@@ -515,7 +543,6 @@ window.BG_TopoReadAdapter = (() => {
                 let value;
 
                 if (def.useMaterialFallback) {
-                    // Preset-driven: fallback to current material value
                     value = parseFloat(el.getAttribute(def.dataAttr)) || material.uniforms[def.uniform]?.value || def.default;
                 } else {
                     value = parseFloat(el.getAttribute(def.dataAttr)) || def.default;
@@ -527,6 +554,11 @@ window.BG_TopoReadAdapter = (() => {
                     value = clamp01(value);
                 }
 
+                if (window.DEBUG_MORPHBG) {
+                    const preset = el.getAttribute('data-shader-preset') || 'unknown';
+                    const mode = el.getAttribute('data-shader-mode') || 'unknown';
+                    console.log(`[adaptor] accumulateFromSection: preset=${preset}, mode=${mode}, key=${key}, value=${value}, w=${w}, acc=${acc[key]}`);
+                }
                 acc[key] += value * w;
             }
         },
@@ -543,6 +575,9 @@ window.BG_TopoReadAdapter = (() => {
 
             for (const [key] of accumulatedUniforms) {
                 next[key] = acc[key] * invW;
+                if (window.DEBUG_MORPHBG) {
+                    console.log(`[adaptor] finalizeTargets: key=${key}, acc=${acc[key]}, totalW=${totalW}, next=${next[key]}`);
+                }
             }
 
             return { target: next };
